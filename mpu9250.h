@@ -193,8 +193,9 @@
 #define SerialDebug true   // set to true to get Serial output for debugging
 
 
-class mpu_9250 {
+class MPU_9250 {
 
+  public:
   // Set initial input parameters
   enum Ascale {
     AFS_2G = 0,
@@ -463,7 +464,7 @@ class mpu_9250 {
           }
 
 
-  void setup()
+  void initlaize()
   {
     Wire.begin();
   //  TWBR = 12;  // 400 kbit/sec I2C speed
@@ -524,7 +525,7 @@ class mpu_9250 {
     }
   }
 
-  void loop()
+  void update()
   {
     // If intPin goes high, all data registers have new data
     if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {  // On interrupt, check if data ready interrupt
@@ -1080,4 +1081,4 @@ class mpu_9250 {
   	while (Wire.available()) {
           dest[i++] = Wire.read(); }         // Put read results in the Rx buffer
   }
-}
+};
