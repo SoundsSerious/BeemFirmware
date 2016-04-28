@@ -33,7 +33,6 @@ class Event{
 class Observer //In which we notify
 {
 public:
-  int _index = NULL;
   virtual ~Observer() {}
   virtual void onNotify(const Entity& entity, Event event) = 0;
 };

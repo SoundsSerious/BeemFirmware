@@ -468,8 +468,6 @@ class MPU_9250 {
   {
     Wire.begin();
   //  TWBR = 12;  // 400 kbit/sec I2C speed
-    Serial.begin(115200);
-
     // Set up the interrupt pin, its set as active high, push-pull
     pinMode(intPin, INPUT);
     digitalWrite(intPin, LOW);
@@ -480,7 +478,7 @@ class MPU_9250 {
 
     // Read the WHO_AM_I register, this is a good test of communication
     byte c = readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);  // Read WHO_AM_I register for MPU-9250
-    Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX); Serial.print(" I should be "); Serial.println(0x71, HEX);
+    //Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX); Serial.print(" I should be "); Serial.println(0x71, HEX);
     delay(1000);
 
     if (c == 0x71) // WHO_AM_I should always be 0x68
@@ -488,39 +486,39 @@ class MPU_9250 {
       Serial.println("MPU9250 is online...");
 
       MPU9250SelfTest(SelfTest); // Start by performing self test and reporting values
-      Serial.print("x-axis self test: acceleration trim within : "); Serial.print(SelfTest[0],1); Serial.println("% of factory value");
-      Serial.print("y-axis self test: acceleration trim within : "); Serial.print(SelfTest[1],1); Serial.println("% of factory value");
-      Serial.print("z-axis self test: acceleration trim within : "); Serial.print(SelfTest[2],1); Serial.println("% of factory value");
-      Serial.print("x-axis self test: gyration trim within : "); Serial.print(SelfTest[3],1); Serial.println("% of factory value");
-      Serial.print("y-axis self test: gyration trim within : "); Serial.print(SelfTest[4],1); Serial.println("% of factory value");
-      Serial.print("z-axis self test: gyration trim within : "); Serial.print(SelfTest[5],1); Serial.println("% of factory value");
+      //Serial.print("x-axis self test: acceleration trim within : "); Serial.print(SelfTest[0],1); Serial.println("% of factory value");
+      //Serial.print("y-axis self test: acceleration trim within : "); Serial.print(SelfTest[1],1); Serial.println("% of factory value");
+      //Serial.print("z-axis self test: acceleration trim within : "); Serial.print(SelfTest[2],1); Serial.println("% of factory value");
+      //Serial.print("x-axis self test: gyration trim within : "); Serial.print(SelfTest[3],1); Serial.println("% of factory value");
+      //Serial.print("y-axis self test: gyration trim within : "); Serial.print(SelfTest[4],1); Serial.println("% of factory value");
+      //Serial.print("z-axis self test: gyration trim within : "); Serial.print(SelfTest[5],1); Serial.println("% of factory value");
 
       calibrateMPU9250(gyroBias, accelBias); // Calibrate gyro and accelerometers, load biases in bias registers
       delay(1000);
 
       initMPU9250();
-      Serial.println("MPU9250 initialized for active data mode...."); // Initialize device for active mode read of acclerometer, gyroscope, and temperature
+      //Serial.println("MPU9250 initialized for active data mode...."); // Initialize device for active mode read of acclerometer, gyroscope, and temperature
 
       // Read the WHO_AM_I register of the magnetometer, this is a good test of communication
       byte d = readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);  // Read WHO_AM_I register for AK8963
-      Serial.print("AK8963 "); Serial.print("I AM "); Serial.print(d, HEX); Serial.print(" I should be "); Serial.println(0x48, HEX);
+      //Serial.print("AK8963 "); Serial.print("I AM "); Serial.print(d, HEX); Serial.print(" I should be "); Serial.println(0x48, HEX);
       delay(1000);
 
       // Get magnetometer calibration from AK8963 ROM
-      initAK8963(magCalibration); Serial.println("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
+      initAK8963(magCalibration); //Serial.println("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
 
     if(SerialDebug) {
-      //  Serial.println("Calibration values: ");
-      Serial.print("X-Axis sensitivity adjustment value "); Serial.println(magCalibration[0], 2);
-      Serial.print("Y-Axis sensitivity adjustment value "); Serial.println(magCalibration[1], 2);
-      Serial.print("Z-Axis sensitivity adjustment value "); Serial.println(magCalibration[2], 2);
+      //Serial.println("Calibration values: ");
+      //Serial.print("X-Axis sensitivity adjustment value "); Serial.println(magCalibration[0], 2);
+      //Serial.print("Y-Axis sensitivity adjustment value "); Serial.println(magCalibration[1], 2);
+      //Serial.print("Z-Axis sensitivity adjustment value "); Serial.println(magCalibration[2], 2);
     }
       delay(1000);
     }
     else
     {
-      Serial.print("Could not connect to MPU9250: 0x");
-      Serial.println(c, HEX);
+      //Serial.print("Could not connect to MPU9250: 0x");
+      //Serial.println(c, HEX);
       while(1) ; // Loop forever if communication doesn't happen
     }
   }
@@ -528,7 +526,8 @@ class MPU_9250 {
   void update()
   {
     // If intPin goes high, all data registers have new data
-    if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {  // On interrupt, check if data ready interrupt
+    if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
+      //Serial.println("Interrupt"); // On interrupt, check if data ready interrupt
       readAccelData(accelCount);  // Read the x/y/z adc values
       getAres();
 
@@ -556,6 +555,9 @@ class MPU_9250 {
       mx = (float)magCount[0]*mRes*magCalibration[0] - magbias[0];  // get actual magnetometer value, this depends on scale being set
       my = (float)magCount[1]*mRes*magCalibration[1] - magbias[1];
       mz = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
+    }
+    else{
+      //Serial.println(" No Interrupt ");
     }
 
     Now = micros();
