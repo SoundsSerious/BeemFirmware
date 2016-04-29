@@ -47,7 +47,7 @@ class Adafruit_DotStar {
   void
     begin(void),                            // Prime pins/SPI for output
     clear(),                                // Set all pixel data to zero
-    setBrightness(uint8_t),                 // Set global brightness 0-255
+    setBrightness(uint8_t b),                 // Set global brightness 0-255
     setPixelColor(uint16_t n, uint32_t c),
     setPixelColor(uint16_t n, uint8_t r, uint8_t g, uint8_t b),
     show(void),                             // Issue color data to strip
@@ -62,9 +62,7 @@ class Adafruit_DotStar {
   uint8_t
     getBrightness(void) const,              // Return global brightness
    *getPixels(void) const;                  // Return pixel data pointer
-
- private:
-
+   
   uint16_t
     numLEDs;                                // Number of pixels
   uint8_t

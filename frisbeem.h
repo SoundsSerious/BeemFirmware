@@ -1,7 +1,9 @@
 #import "application.h"
 #import "mpu9250.h"
 #import "dotstar.h"
-#import "patterns.h"
+#import "state.h"
+#import "entity.h"
+#import "subject.h"
 
 #define DOTSTAR_GRB (1 | (0 << 2) | (2 << 4))
 //uint16_t LEDS = 54;
