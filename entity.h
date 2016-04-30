@@ -3,9 +3,9 @@
 class Entity
 {
 public:
-  ~Entity(){};
+
   virtual void update();
-  virtual void initalize();
+  virtual void initlaize();
 
   float x() const { return x_; }
   float y() const { return y_; }
@@ -16,7 +16,7 @@ public:
   void setZ(float z) { z_ = z; }
 
   virtual void blue();
-
+  virtual void green();
   float x_=0;
   float y_=0;
   float z_=0;
