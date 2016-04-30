@@ -4,11 +4,13 @@
 #import "state.h"
 #import "entity.h"
 #import "subject.h"
+#import "event.h"
 
 #define DOTSTAR_GRB (1 | (0 << 2) | (2 << 4))
-//uint16_t LEDS = 54;
+#define NUM_EVENTS 10
 
 //In which we combine Lights + Motion + Games
+//
 class Frisbeem: public Entity, public Subject
 {
 public:
@@ -16,10 +18,10 @@ public:
   ~Frisbeem() {}; //Destructor
 
   //States
-  State* _powerState;
-  State* _motionState;
-  State* _lightMode;
-  State* _gameMode;
+  StateSwitch _powerState;
+  StateSwitch _motionState;
+  StateSwitch _lightMode;
+  StateSwitch _gameMode;
 
   //Hardware
   MPU_9250 _mpu;
@@ -28,30 +30,28 @@ public:
   //Connection
   TCPClient _client;
 
+  //Events
+  Event *_events[ NUM_EVENTS ];
+  Event newEvent = Event(0);
+  uint8_t _currentEventIndex = 0;
+
   //Counting variables
   uint8_t whl;
 
-  //Functions
+  //Important Entity Functions
+  void initlaize();
+  void update();
+
+  //Color Functions
   void rainbow( uint8_t wait );
   void colorAll(uint32_t c, uint8_t wait);
   void colorWipe(uint32_t c, uint8_t wait);
   void blue();
-  uint32_t Wheel( byte WheelPos );
+  uint32_t wheel( byte WheelPos );
 
-
-  void initalize(){
-    //Update MPU
-    _mpu.initlaize();
-    //Update Strip
-    _strip.begin();
-    _strip.show();
-  }
-
-  void update(){
-    //Serial.println("Update");
-    //Update MPU
-    _mpu.update();
-    //Update Strip
-    this -> rainbow(5);
-  }
+  //Event Functions
+  Event genNextEvent();
+  Event *getCurrentEvent();
+  void setCurrentEvent( Event *event );
+  void processEvents();
 };

@@ -1,26 +1,61 @@
 #import "frisbeem.h"
+#import "event.h"
 
-/*Frisbeem::Frisbeem() {
-  _mpu = &MPU_9250();
-  strip = &Adafruit_DotStar(54);
-}*/
-
-/*void Frisbeem::initalize(){
+void Frisbeem::initlaize(){
   //Update MPU
   _mpu.initlaize();
   //Update Strip
+  _strip.begin();
+  _strip.show();
+  _motionState = StateSwitch();
 }
 
 void Frisbeem::update(){
   //Update MPU
   _mpu.update();
   //Update Strip
-}*/
+  rainbow(5);
+  //create newEvent and process events (circular buffer)
+  processEvents();
+  //Notify Observers Of new Event
+  notify( *this, newEvent);
+  //Send Event To Current Motion State
+  _motionState.handleInput( newEvent );
+}
 
+void Frisbeem::processEvents()
+{ //Generate A New Event & Add to circular buffer after deleting current item
+  newEvent = genNextEvent();
+  //Delete Current Item & Add To Buffer
+  delete getCurrentEvent();
+  setCurrentEvent( &newEvent);
+  //Move Tail Index And
+  _currentEventIndex++;
+  if (_currentEventIndex >= NUM_EVENTS - 1)
+  {
+    _currentEventIndex = 0;
+  }
+}
+
+Event Frisbeem::genNextEvent()
+{ //For Now Look At Omegea (w)
+  return Event( _mpu.gz );
+}
+
+
+Event *Frisbeem::getCurrentEvent()
+{
+  return _events[ _currentEventIndex ];
+}
+
+void Frisbeem::setCurrentEvent(Event *event)
+{
+  _events[ _currentEventIndex ] = event;
+}
 
 // Input a value 0 to 255 to get a color value.
 // The colours are a transition r - g - b - back to r.
-uint32_t Frisbeem::Wheel(byte WheelPos) {
+uint32_t Frisbeem::wheel(byte WheelPos) {
   if(WheelPos < 85) {
    return _strip.Color(WheelPos * 3, 255 - WheelPos * 3, 0);
   } else if(WheelPos < 170) {
@@ -36,7 +71,7 @@ void Frisbeem::blue() {
   uint16_t i, j;
 
   for(i=0; i<_strip.numPixels(); i++) {
-      _strip.setPixelColor(i, Wheel(255));
+      _strip.setPixelColor(i, wheel(255));
   }
   _strip.show();
 }
@@ -47,7 +82,7 @@ void Frisbeem::rainbow(uint8_t wait) {
     whl = 0;
   }
   for(i=0; i<_strip.numPixels(); i++) {
-    _strip.setPixelColor(i, Wheel((i+whl)));
+    _strip.setPixelColor(i, wheel((i+whl)));
   }
   whl++;
   _strip.show();

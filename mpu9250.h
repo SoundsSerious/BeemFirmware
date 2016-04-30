@@ -474,12 +474,12 @@ class MPU_9250 {
     pinMode(myLed, OUTPUT);
     digitalWrite(myLed, HIGH);
 
-    delay(1000);
+    delay(100);
 
     // Read the WHO_AM_I register, this is a good test of communication
     byte c = readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);  // Read WHO_AM_I register for MPU-9250
     //Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX); Serial.print(" I should be "); Serial.println(0x71, HEX);
-    delay(1000);
+    delay(100);
 
     if (c == 0x71) // WHO_AM_I should always be 0x68
     {

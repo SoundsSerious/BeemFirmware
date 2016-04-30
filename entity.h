@@ -3,11 +3,7 @@
 class Entity
 {
 public:
-  Entity()
-  : x_(0), y_(0), z_(0)
-  {}
-
-  ~Entity() {}
+  ~Entity(){};
   virtual void update() {};
   virtual void initalize() {};
 
@@ -19,7 +15,7 @@ public:
   void setY(float y) { y_ = y; }
   void setZ(float z) { z_ = z; }
 
-  float x_;
-  float y_;
-  float z_;
+  float x_=0;
+  float y_=0;
+  float z_=0;
 };

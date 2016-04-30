@@ -3,13 +3,15 @@
 #import "dotstar.h"
 #include "i2c_hal.h"
 
+//WARNING: I SUCK AT SPELLING. FEEL FREE TO FIX ANY SPELLING ERRORS XP
+
 Frisbeem frisbeem = Frisbeem();
 
 #define I2C_SPEED (uint32_t)400000 //400Khz can push 600Khz sometimes
 
 uint8_t whl;
 uint8_t *pixels;
-uint8_t brightness = 255/2;
+uint8_t brightness = 1;
 
 void setup() {
 Wire.setSpeed(I2C_SPEED);

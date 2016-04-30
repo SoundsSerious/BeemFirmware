@@ -18,7 +18,7 @@ void Subject::removeObserver(Observer &observer)
      numObservers_ -= 1;
 }
 
-void Subject::notify(const Entity &entity, Event &event)
+void Subject::notify(Entity &entity, Event &event)
 {
   for (int i = 0; i < numObservers_; i++)
   {
