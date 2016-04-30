@@ -5,9 +5,13 @@
 #import "entity.h"
 #import "subject.h"
 #import "event.h"
+using namespace std;
+using namespace colorFun;
+//WARNING:: SPELLING MAY BE EXTREMELY BAD!!!
 
 #define DOTSTAR_GRB (1 | (0 << 2) | (2 << 4))
 #define NUM_EVENTS 10
+
 
 //In which we combine Lights + Motion + Games
 class Frisbeem: public Subject, public Entity
@@ -17,7 +21,7 @@ public:
   ~Frisbeem() {}; //Destructor
 
   //Physical parameters
-  float momentOfInertial = 0.008748;
+
 
   //States
   StateSwitch _powerState;
@@ -46,11 +50,11 @@ public:
   void update();
 
   //Color Functions
-  void rainbow( uint8_t wait );
+  /*void rainbow( uint8_t wait );
   void colorAll(uint32_t c, uint8_t wait);
   void colorWipe(uint32_t c, uint8_t wait);
   void blue();
-  uint32_t wheel( byte WheelPos );
+  uint32_t wheel( byte WheelPos );*/
 
   //Event Functions
   Event genNextEvent();
