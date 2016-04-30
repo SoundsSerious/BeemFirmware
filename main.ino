@@ -3,9 +3,10 @@
 #import "dotstar.h"
 #include "i2c_hal.h"
 
+using namespace std;
 //WARNING: I SUCK AT SPELLING. FEEL FREE TO FIX ANY SPELLING ERRORS XP
 
-Frisbeem frisbeem = Frisbeem();
+extern Frisbeem frisbeem = Frisbeem();
 
 #define I2C_SPEED (uint32_t)400000 //400Khz can push 600Khz sometimes
 uint8_t brightness = 50;
@@ -16,7 +17,7 @@ Serial.begin( 115200 );
 Serial.println("Initlaize");
 frisbeem.initlaize();
 
-frisbeem.frisbeem._strip.brightness = brightness;
+frisbeem._strip.brightness = brightness;
 
 }
 
