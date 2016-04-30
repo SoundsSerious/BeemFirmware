@@ -3,7 +3,7 @@
 #import "dotstar.h"
 #include "i2c_hal.h"
 
-using namespace std;
+//using namespace std;
 //WARNING: I SUCK AT SPELLING. FEEL FREE TO FIX ANY SPELLING ERRORS XP
 
 extern Frisbeem frisbeem = Frisbeem();

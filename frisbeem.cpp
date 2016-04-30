@@ -1,6 +1,5 @@
 #import "frisbeem.h"
 
-
 void Frisbeem::initlaize(){
   //Update MPU
   _mpu.initlaize();
@@ -83,6 +82,16 @@ void Frisbeem::blue() {
   }
   _strip.show();
 }
+
+void Frisbeem::green() {
+  uint16_t i, j;
+
+  for(i=0; i<_strip.numPixels(); i++) {
+      _strip.setPixelColor(i, wheel(100));
+  }
+  _strip.show();
+}
+
 
 void Frisbeem::rainbow(uint8_t wait) {
   uint16_t i;

@@ -16,11 +16,14 @@ int MotionState::handleInput(Entity &entity, Event &event)
     dOmegaDt = dOmega / dt;
 
     //Apply Torque Through Low Pass Filter
-    _torque = MOI * dOmegaDt;
+    _torque = 0.008748 * dOmegaDt;
     torque = 0.6 * _torque + 0.3 * torque;
 
     if (torque > 25){
       entity.blue();
+    }
+    else{
+      entity.green();
     }
 
     //Setup For Next Update

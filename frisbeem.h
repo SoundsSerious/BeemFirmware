@@ -56,6 +56,7 @@ public:
   void colorAll(uint32_t c, uint8_t wait);
   void colorWipe(uint32_t c, uint8_t wait);
   virtual void blue();
+  virtual void green();
   uint32_t wheel( byte WheelPos );
 
   //Event Functions

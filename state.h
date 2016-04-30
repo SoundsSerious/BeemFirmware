@@ -8,7 +8,7 @@
 using namespace std;
 
 #define MAX_STATES 50 //'Murica
-float MOI = 0.008748; //Frisbeem Moment Of Inertia
+//float MOI = 0.008748; //Frisbeem Moment Of Inertia
 
 class State //In which we derive our actions
 {
