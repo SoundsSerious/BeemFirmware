@@ -1,5 +1,5 @@
 #import "frisbeem.h"
-#import "event.h"
+//#import "event.h"
 
 void Frisbeem::initlaize(){
   //Update MPU
@@ -7,7 +7,7 @@ void Frisbeem::initlaize(){
   //Update Strip
   _strip.begin();
   _strip.show();
-  _motionState = StateSwitch();
+  //_motionState = StateSwitch();
 }
 
 void Frisbeem::update(){
@@ -25,16 +25,20 @@ void Frisbeem::update(){
 
 void Frisbeem::processEvents()
 { //Generate A New Event & Add to circular buffer after deleting current item
+  Serial.print("Getting New Event #");Serial.println(_eventCount);
   newEvent = genNextEvent();
+  _eventCount++;
   //Delete Current Item & Add To Buffer
-  delete getCurrentEvent();
-  setCurrentEvent( &newEvent);
-  //Move Tail Index And
-  _currentEventIndex++;
-  if (_currentEventIndex >= NUM_EVENTS - 1)
-  {
-    _currentEventIndex = 0;
-  }
+  // delete getCurrentEvent();
+  // setCurrentEvent( &newEvent);
+  // Serial.println("Added New Event To Queue");
+  // //Move Tail Index And
+  // _currentEventIndex++;
+  // if (_currentEventIndex >= NUM_EVENTS - 1)
+  // { Serial.println("Resetting Queue Index");
+  //   _currentEventIndex = 0;
+  // }
+
 }
 
 Event Frisbeem::genNextEvent()

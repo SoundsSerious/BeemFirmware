@@ -192,6 +192,7 @@
 #define AHRS true         // set to false for basic data read
 #define SerialDebug true   // set to true to get Serial output for debugging
 
+#define SEND_ORIENT_DATA false
 
 class MPU_9250 {
 
@@ -602,17 +603,19 @@ class MPU_9250 {
       byte q31 = q3int & 0xFF;
       byte q30 = (q3int >> 8) & 0xFF;
 
-      teapotPacket[2] = q00;
-      teapotPacket[3] = q01;
-      teapotPacket[4] = q10;
-      teapotPacket[5] = q11;
-      teapotPacket[6] = q20;
-      teapotPacket[7] = q21;
-      teapotPacket[8] = q30;
-      teapotPacket[9] = q31;
+      #if SEND_ORIENT_DATA
+        teapotPacket[2] = q00;
+        teapotPacket[3] = q01;
+        teapotPacket[4] = q10;
+        teapotPacket[5] = q11;
+        teapotPacket[6] = q20;
+        teapotPacket[7] = q21;
+        teapotPacket[8] = q30;
+        teapotPacket[9] = q31;
 
-      Serial.write(teapotPacket, 14);
-      teapotPacket[11]++;
+        Serial.write(teapotPacket, 14);
+        teapotPacket[11]++;
+      #endif
 
       count = millis();
       sumCount = 0;

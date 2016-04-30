@@ -36,7 +36,10 @@ public:
 
 };
 
-class Airborne: public State
+//Initial States
+
+class MotionState: public State
 {
-  //Class that exists over
+  float lastOmega
+  float torque
 };

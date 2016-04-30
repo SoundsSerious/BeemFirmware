@@ -2,7 +2,7 @@
 
 class Event{
   public:
-  Event(float omega){abs_omega = omega;}
-  ~Event() {}
+  Event(float omega){abs_omega = omega;};
+  ~Event() {};
   float abs_omega;
 };

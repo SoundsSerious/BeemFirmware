@@ -10,12 +10,14 @@
 #define NUM_EVENTS 10
 
 //In which we combine Lights + Motion + Games
-//
-class Frisbeem: public Entity, public Subject
+class Frisbeem: public Subject, public Entity
 {
 public:
   Frisbeem(): _mpu(), _strip(54){};//Constructor
   ~Frisbeem() {}; //Destructor
+
+  //Physical parameters
+  float momentOfInertial = 0.008748;
 
   //States
   StateSwitch _powerState;
@@ -34,6 +36,7 @@ public:
   Event *_events[ NUM_EVENTS ];
   Event newEvent = Event(0);
   uint8_t _currentEventIndex = 0;
+  int _eventCount;
 
   //Counting variables
   uint8_t whl;

@@ -8,27 +8,26 @@
 Frisbeem frisbeem = Frisbeem();
 
 #define I2C_SPEED (uint32_t)400000 //400Khz can push 600Khz sometimes
-
-uint8_t whl;
-uint8_t *pixels;
 uint8_t brightness = 1;
 
 void setup() {
 Wire.setSpeed(I2C_SPEED);
 Serial.begin(115200);
-frisbeem.initalize();
+Serial.println("Initlaize");
+frisbeem.initlaize();
 
-frisbeem._strip.brightness = brightness;
+/*frisbeem._strip.brightness = brightness;*/
 
 }
 
 void loop() {
 
+Serial.println("Updating");
 frisbeem.update();
 
 }
 
-void pixelDebugPrint(){
+/*void pixelDebugPrint(){
 
   int numLED = frisbeem._strip.numPixels();
   Serial.print("We have ");Serial.print(numLED);Serial.println(" LEDs");
@@ -39,4 +38,4 @@ void pixelDebugPrint(){
   }
   Serial.println("|\r\n\r\n");
 
-}
+}*/
