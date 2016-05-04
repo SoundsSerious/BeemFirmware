@@ -18,10 +18,10 @@ void Subject::removeObserver(Observer &observer)
      numObservers_ -= 1;
 }
 
-void Subject::notify(Entity &entity, Event &event)
+void Subject::notify(Event &event)
 {
   for (int i = 0; i < numObservers_; i++)
   {
-    observers_[i]->onNotify(entity, event);
+    observers_[i]->onNotify( event);
   }
 }
