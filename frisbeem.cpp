@@ -1,26 +1,33 @@
 #include "frisbeem.h"
 
 void Frisbeem::initlaize(){
+  //Initalize communication
+  _com.initialize();
+  _com.log("Communication Started...");
+  _com.log("Go For Initlaize");
   //Update MPU
   _mpu.initlaize();
+
   //Update Strip
   _lights._strip.begin();
   _lights._strip.show();
   //Serial.println("Swith State Creation");
-  _motionState = StateSwitch( *this );
+  _motionState = StateSwitch();
   //Serial.println("Motion State Creation");
   _motionState.initialize();
+  _com.log("Go For Loop");
 }
 
 void Frisbeem::update(){
+  _com.log("Updating...");
   //Update MPU
   _mpu.update();
-  //Update Strip
-  //rainbow(25);
+  //Update COM layer
+  _com.update();
   //create newEvent and process events (circular buffer)
   processEvents();
   //Notify Observers Of new Event
-  notify( *this, newEvent);
+  notify( newEvent);
   //Send Event To Current Motion State
   //Serial.println("Calling handleInput");
   _motionState.handleInput( newEvent );

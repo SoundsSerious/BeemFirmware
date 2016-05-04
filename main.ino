@@ -1,5 +1,5 @@
 #include "application.h"
-//#include "globals.h"
+#include "globals.h"
 #include "frisbeem.h"
 #include "i2c_hal.h"
 
@@ -8,7 +8,7 @@
 
 //SYSTEM_MODE(MANUAL); //Switch to manual when away from network
 
-Frisbeem frisbeem = Frisbeem();
+Frisbeem frisbeem;
 
 #define I2C_SPEED (uint32_t)400000 //400Khz can push 600Khz sometimes
 
@@ -18,7 +18,6 @@ void setup() {
 Wire.setSpeed(I2C_SPEED);
 
 frisbeem.initlaize();
-frisbeem._lights._strip.brightness = brightness;
 
 }
 

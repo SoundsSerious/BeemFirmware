@@ -17,7 +17,7 @@ using namespace std;
 class Frisbeem: public Subject, public Entity
 {
 public:
-  Frisbeem(): _mpu(), _lights(){};//Constructor
+  Frisbeem(): _mpu(), _lights(), _com(){};//Constructor
   virtual ~Frisbeem() {}; //Destructor
 
   //Physical parameters

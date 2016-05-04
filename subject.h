@@ -14,5 +14,5 @@ public:
   int numObservers_;
   void addObserver(Observer &observer);
   void removeObserver(Observer &observer);
-  void notify(Entity &entity, Event &event);
+  void notify( Event &event);
 };

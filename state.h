@@ -13,16 +13,12 @@ using namespace std;
 class State //In which we derive our actions
 {
 public:
-  State(Entity  &entity)
-  {
-    _entity = &entity;
-  };
   virtual ~State() {};
 
   //Object That Has State
   Entity *_entity;
 
-  virtual int handleInput( Event &event ) {return 0;};
+  virtual int handleInput( Event &event ) = 0;
   virtual void update(){};
   virtual void enter(){};
   virtual void leave(){};

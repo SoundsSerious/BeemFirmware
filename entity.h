@@ -4,8 +4,8 @@ class Entity
 {
 public:
 
-  virtual void update();
-  virtual void initlaize();
+  virtual void update() = 0;
+  virtual void initlaize() = 0;
 
   float x() const { return x_; }
   float y() const { return y_; }

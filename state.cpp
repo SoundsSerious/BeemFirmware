@@ -1,4 +1,5 @@
 #import "state.h"
+#import "globals.h"
 
 void StateSwitch::initialize(){
   Serial.println("Pointer Assignment");
@@ -22,7 +23,7 @@ int MotionState::handleInput(Event &event)
     //Serial.print("Torque \t");Serial.println(torque);
     //Serial.print("Omega \t");Serial.println(newOmega);
     if (newOmega > 200){ //Airborne
-        _entity  -> _lights.rainbow(1);
+        frisbeem._lights.rainbow(1);
         stationaryCount = 0;
         moving = true;
         //Serial.println("Moving...");
@@ -48,12 +49,12 @@ int MotionState::handleInput(Event &event)
     }
     if (sleepModeActivated){
      //Turn Off Lights. Switch Arduino to Low Power Consumption.
-     entity -> _lights.off();
+     frisbeem._lights.off();
      delay(250);
     }
     else {
       if (moving) {
-        entity -> _lights.rainbow(20);
+        frisbeem._lights.rainbow(5);
       }
     }
     //delay(50);//temp

@@ -23,8 +23,12 @@ void COM::update(){
 
 void COM::log(String message){
   if (debugMode){
-      Serial.println( message );
+    if (Serial.available()){
+        Serial.println( message );
+      }
+    else{
       server.write( message );
+    }
   }
 }
 

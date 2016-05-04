@@ -5,16 +5,15 @@
 #define DOTSTAR_GRB (1 | (0 << 2) | (2 << 4))
 #define NUM_LED 54
 
-uint8_t brightness = 100;
-
 class Lights { //public Observer
 public:
   //In Which We Light The World
-  Lights(): _strip( NUM_LED ){};
+  Lights(): _strip( NUM_LED ){_strip.brightness = brightness;};
   ~Lights(){};
 
   Adafruit_DotStar _strip;
-
+  uint8_t brightness = 100;
+  
   //Counting variables
   uint8_t whl;
 
