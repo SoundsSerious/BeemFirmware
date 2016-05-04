@@ -15,8 +15,6 @@ public:
   void setY(float y) { y_ = y; }
   void setZ(float z) { z_ = z; }
 
-  virtual void blue();
-  virtual void green();
   float x_=0;
   float y_=0;
   float z_=0;

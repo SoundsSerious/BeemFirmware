@@ -27,9 +27,9 @@
  */
 #include "application.h"
 #include "math.h"
-//#include <SPI.h"
-//#include <Wire.h>
+#include "3dmath.h"
 
+//extern Frisbeem frisbeem;
 // See also MPU-9250 Register Map and Descriptions, Revision 4.0, RM-MPU-9250A-00, Rev. 1.4, 9/9/2013 for registers not listed in
 // above document; the MPU9250 and MPU9150 are virtually identical but the latter has a different register map
 //
@@ -190,9 +190,7 @@
 #endif
 
 #define AHRS true         // set to false for basic data read
-#define SerialDebug true   // set to true to get Serial output for debugging
-
-#define SEND_ORIENT_DATA false
+#define SEND_ORIENT_DATA true
 
 class MPU_9250 {
 
@@ -479,47 +477,45 @@ class MPU_9250 {
 
     // Read the WHO_AM_I register, this is a good test of communication
     byte c = readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);  // Read WHO_AM_I register for MPU-9250
-    //Serial.print("MPU9250 "); Serial.print("I AM "); Serial.print(c, HEX); Serial.print(" I should be "); Serial.println(0x71, HEX);
+    //frisbeem._com.log("MPU9250 "); //frisbeem._com.log("I AM "); //frisbeem._com.log(c, HEX); //frisbeem._com.log(" I should be "); //frisbeem._com.logln(0x71, HEX);
     delay(100);
 
     if (c == 0x71) // WHO_AM_I should always be 0x68
     {
-      Serial.println("MPU9250 is online...");
+      //frisbeem._com.logln("MPU9250 is online...");
 
       MPU9250SelfTest(SelfTest); // Start by performing self test and reporting values
-      //Serial.print("x-axis self test: acceleration trim within : "); Serial.print(SelfTest[0],1); Serial.println("% of factory value");
-      //Serial.print("y-axis self test: acceleration trim within : "); Serial.print(SelfTest[1],1); Serial.println("% of factory value");
-      //Serial.print("z-axis self test: acceleration trim within : "); Serial.print(SelfTest[2],1); Serial.println("% of factory value");
-      //Serial.print("x-axis self test: gyration trim within : "); Serial.print(SelfTest[3],1); Serial.println("% of factory value");
-      //Serial.print("y-axis self test: gyration trim within : "); Serial.print(SelfTest[4],1); Serial.println("% of factory value");
-      //Serial.print("z-axis self test: gyration trim within : "); Serial.print(SelfTest[5],1); Serial.println("% of factory value");
+      //frisbeem._com.log("x-axis self test: acceleration trim within : "); //frisbeem._com.log(SelfTest[0],1); //frisbeem._com.logln("% of factory value");
+      //frisbeem._com.log("y-axis self test: acceleration trim within : "); //frisbeem._com.log(SelfTest[1],1); //frisbeem._com.logln("% of factory value");
+      //frisbeem._com.log("z-axis self test: acceleration trim within : "); //frisbeem._com.log(SelfTest[2],1); //frisbeem._com.logln("% of factory value");
+      //frisbeem._com.log("x-axis self test: gyration trim within : "); //frisbeem._com.log(SelfTest[3],1); //frisbeem._com.logln("% of factory value");
+      //frisbeem._com.log("y-axis self test: gyration trim within : "); //frisbeem._com.log(SelfTest[4],1); //frisbeem._com.logln("% of factory value");
+      //frisbeem._com.log("z-axis self test: gyration trim within : "); //frisbeem._com.log(SelfTest[5],1); //frisbeem._com.logln("% of factory value");
 
       calibrateMPU9250(gyroBias, accelBias); // Calibrate gyro and accelerometers, load biases in bias registers
       delay(1000);
 
       initMPU9250();
-      //Serial.println("MPU9250 initialized for active data mode...."); // Initialize device for active mode read of acclerometer, gyroscope, and temperature
+      //frisbeem._com.logln("MPU9250 initialized for active data mode...."); // Initialize device for active mode read of acclerometer, gyroscope, and temperature
 
       // Read the WHO_AM_I register of the magnetometer, this is a good test of communication
       byte d = readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);  // Read WHO_AM_I register for AK8963
-      //Serial.print("AK8963 "); Serial.print("I AM "); Serial.print(d, HEX); Serial.print(" I should be "); Serial.println(0x48, HEX);
+      ////frisbeem._com.log("AK8963 "); ////frisbeem._com.log("I AM "); ////frisbeem._com.log(d, HEX); ////frisbeem._com.log(" I should be "); ////frisbeem._com.logln(0x48, HEX);
       delay(1000);
 
       // Get magnetometer calibration from AK8963 ROM
-      initAK8963(magCalibration); //Serial.println("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
+      initAK8963(magCalibration); ////frisbeem._com.logln("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
 
-    if(SerialDebug) {
-      //Serial.println("Calibration values: ");
-      //Serial.print("X-Axis sensitivity adjustment value "); Serial.println(magCalibration[0], 2);
-      //Serial.print("Y-Axis sensitivity adjustment value "); Serial.println(magCalibration[1], 2);
-      //Serial.print("Z-Axis sensitivity adjustment value "); Serial.println(magCalibration[2], 2);
-    }
+      ////frisbeem._com.logln("Calibration values: ");
+      ////frisbeem._com.log("X-Axis sensitivity adjustment value "<<magCalibration[0], 2);
+      ////frisbeem._com.log("Y-Axis sensitivity adjustment value "<<magCalibration[1]<< 2);
+      ////frisbeem._com.log("Z-Axis sensitivity adjustment value "<<magCalibration[2]<< 2);
       delay(1000);
     }
     else
     {
-      //Serial.print("Could not connect to MPU9250: 0x");
-      //Serial.println(c, HEX);
+      ////frisbeem._com.log("Could not connect to MPU9250: 0x");
+      ////frisbeem._com.logln(c, HEX);
       while(1) ; // Loop forever if communication doesn't happen
     }
   }
@@ -528,7 +524,7 @@ class MPU_9250 {
   {
     // If intPin goes high, all data registers have new data
     if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
-      //Serial.println("Interrupt"); // On interrupt, check if data ready interrupt
+      //frisbeem._com.logln("Interrupt"); // On interrupt, check if data ready interrupt
       readAccelData(accelCount);  // Read the x/y/z adc values
       getAres();
 
@@ -558,7 +554,7 @@ class MPU_9250 {
       mz = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
     }
     else{
-      //Serial.println(" No Interrupt ");
+      //frisbeem._com.logln(" No Interrupt ");
     }
 
     Now = micros();
@@ -603,19 +599,19 @@ class MPU_9250 {
       byte q31 = q3int & 0xFF;
       byte q30 = (q3int >> 8) & 0xFF;
 
-      #if SEND_ORIENT_DATA
-        teapotPacket[2] = q00;
-        teapotPacket[3] = q01;
-        teapotPacket[4] = q10;
-        teapotPacket[5] = q11;
-        teapotPacket[6] = q20;
-        teapotPacket[7] = q21;
-        teapotPacket[8] = q30;
-        teapotPacket[9] = q31;
+      //#if SEND_ORIENT_DATA
+      teapotPacket[2] = q00;
+      teapotPacket[3] = q01;
+      teapotPacket[4] = q10;
+      teapotPacket[5] = q11;
+      teapotPacket[6] = q20;
+      teapotPacket[7] = q21;
+      teapotPacket[8] = q30;
+      teapotPacket[9] = q31;
 
-        Serial.write(teapotPacket, 14);
-        teapotPacket[11]++;
-      #endif
+      Serial.write(teapotPacket, 14);
+      teapotPacket[11]++;
+      //#endif
 
       count = millis();
       sumCount = 0;
@@ -647,7 +643,7 @@ class MPU_9250 {
     {
    	// Possible gyro scales (and their register bit settings) are:
   	// 250 DPS (00), 500 DPS (01), 1000 DPS (10), and 2000 DPS  (11).
-          // Here's a bit of an algorith to calculate DPS/(ADC tick) based on that 2-bit value:
+    // Here's a bit of an algorith to calculate DPS/(ADC tick) based on that 2-bit value:
       case GFS_250DPS:
             gRes = 250.0/32768.0;
             break;

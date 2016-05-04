@@ -13,8 +13,16 @@ using namespace std;
 class State //In which we derive our actions
 {
 public:
+  State(Entity  &entity)
+  {
+    _entity = &entity;
+  };
   virtual ~State() {};
-  virtual int handleInput(Entity &entity, Event &event ) {return 0;};
+
+  //Object That Has State
+  Entity *_entity;
+
+  virtual int handleInput( Event &event ) {return 0;};
   virtual void update(){};
   virtual void enter(){};
   virtual void leave(){};
@@ -41,10 +49,17 @@ public:
   float dOmegaDt,dOmega;
   float torque, _torque;
 
+  unsigned long stationaryCount = 0;
+  unsigned long stationaryReset = -10;
+  unsigned long sleepThreshold = 10000;
+
+  bool moving = true;
+  bool sleepModeActivated = false;
+
 
   String msg = "motionState";
 
-  virtual int handleInput(Entity &entity, Event &event);
+  virtual int handleInput( Event &event);
 };
 
 
@@ -52,13 +67,14 @@ class StateSwitch: public State
 {
   //Class that passes argument to current state
 public:
+
   int currentState = 0;
   std::vector<MotionState*>  _states;
   void initialize();
 
-  virtual int handleInput(Entity &entity, Event &event)
-  { Serial.println("Switch Handiling Input");
-    Serial.println( _states.back() -> handleInput( entity, event ) );
+  virtual int handleInput( Event &event)
+  { //Serial.println("Switch Handiling Input");
+    _states.back() -> handleInput( event );
     return 0;
   }
   //Not Implemented Yet
