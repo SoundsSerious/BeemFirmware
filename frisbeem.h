@@ -22,7 +22,6 @@ public:
 
   //Physical parameters
 
-
   //States
   StateSwitch _powerState;
   StateSwitch _motionState;

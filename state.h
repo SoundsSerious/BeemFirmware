@@ -47,11 +47,17 @@ public:
 
   unsigned long stationaryCount = 0;
   unsigned long stationaryReset = -10;
-  unsigned long sleepThreshold = 10000;
+  unsigned long sleepThreshold = 50000;
 
   bool moving = true;
   bool sleepModeActivated = false;
 
+enum MotionStates {
+  STATIONARY,
+  AIRBORNE,
+};
+
+  int currentState;
 
   String msg = "motionState";
 
@@ -63,15 +69,19 @@ class StateSwitch: public State
 {
   //Class that passes argument to current state
 public:
-
   int currentState = 0;
   std::vector<MotionState*>  _states;
-  void initialize();
-
+  //Important Funcitons
+  virtual void initialize();
   virtual int handleInput( Event &event)
   { //Serial.println("Switch Handiling Input");
-    _states.back() -> handleInput( event );
+    stateNow() -> handleInput( event );
     return 0;
+  }
+
+  MotionState* stateNow()
+  {
+    return _states.back();
   }
   //Not Implemented Yet
   virtual void update() {

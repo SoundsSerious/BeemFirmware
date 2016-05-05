@@ -6,14 +6,16 @@ void Frisbeem::initlaize(){
   _com.log("Communication Started...");
   _com.log("Go For Initlaize");
   //Update MPU
+  _com.log("Go For Brains");
   _mpu.initlaize();
-
   //Update Strip
-  _lights._strip.begin();
-  _lights._strip.show();
+  _com.log("Go For Lights");
+  _lights.initlaize();
   //Serial.println("Swith State Creation");
+  _com.log("Initalizing Motion...");
   _motionState = StateSwitch();
   //Serial.println("Motion State Creation");
+  _com.log("Go For Motion");
   _motionState.initialize();
   _com.log("Go For Loop");
 }
@@ -21,16 +23,24 @@ void Frisbeem::initlaize(){
 void Frisbeem::update(){
   _com.log("Updating...");
   //Update MPU
+  _com.log("Updating MPU");
   _mpu.update();
   //Update COM layer
+  _com.log("Beeming Into Space...");
   _com.update();
   //create newEvent and process events (circular buffer)
+  _com.log("Generating Events");
   processEvents();
   //Notify Observers Of new Event
-  notify( newEvent);
+  _com.log("Hollerin'");
+  notify( newEvent );
   //Send Event To Current Motion State
   //Serial.println("Calling handleInput");
+  _com.log("Making Decisions");
   _motionState.handleInput( newEvent );
+  //Initialize Lights
+  _com.log("Puttin On The High Beems!");
+  _lights.update();
 }
 
 void Frisbeem::processEvents()

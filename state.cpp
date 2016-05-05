@@ -16,6 +16,8 @@ int MotionState::handleInput(Event &event)
     dt = (now - lastTime);
     dOmegaDt = dOmega *1E6/ dt;
 
+
+
     //Apply Torque Through Low Pass Filter
     _torque = 0.008748 * dOmegaDt;
     torque = 0.95 * _torque + 0.05 * torque;
@@ -23,7 +25,6 @@ int MotionState::handleInput(Event &event)
     //Serial.print("Torque \t");Serial.println(torque);
     //Serial.print("Omega \t");Serial.println(newOmega);
     if (newOmega > 200){ //Airborne
-        frisbeem._lights.rainbow(1);
         stationaryCount = 0;
         moving = true;
         //Serial.println("Moving...");
@@ -49,12 +50,17 @@ int MotionState::handleInput(Event &event)
     }
     if (sleepModeActivated){
      //Turn Off Lights. Switch Arduino to Low Power Consumption.
-     frisbeem._lights.off();
-     delay(250);
+     frisbeem._com.log("Sleep Mode");
+     
     }
     else {
-      if (moving) {
-        frisbeem._lights.rainbow(5);
+      if (moving) { //Rainbow Pattern
+        frisbeem._com.log("Airborne");
+        currentState = AIRBORNE;
+      }
+      else{ //Stationary
+        frisbeem._com.log("Stationary");
+        currentState = STATIONARY;
       }
     }
     //delay(50);//temp

@@ -26,7 +26,7 @@ void COM::log(String message){
     if (Serial.available()){
         Serial.println( message );
       }
-    else{
+    else if (client.connected()){
       server.write( message );
     }
   }
@@ -59,7 +59,7 @@ void COM::handleNetworking(){
   //Client Connection
   if (client.connected()) {
     // echo all available bytes back to the client
-    //Particle.process();
+    log("Client Connected...");
 
     //Check If Client Connected
     if (client.available()){
@@ -83,10 +83,8 @@ void COM::handleNetworking(){
     }
   } else {
     // if no client is yet connected, check for a new connection and wait
-    //Serial.println("Connecting...");
+    log("Checking For New Client...");
     client = server.available();
-    //Particle.process();
-    //delay(100);
   }
 }
 
