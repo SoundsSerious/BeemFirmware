@@ -18,5 +18,6 @@ dotstar.cpp
 entity.cpp
 frisbeem.cpp
 lights.cpp
+mpu9250.cpp
 state.cpp
 subject.cpp
