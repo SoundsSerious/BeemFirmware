@@ -8,7 +8,7 @@
 // but is much less computationally intensive---it can be performed on a 3.3 V Pro Mini operating at 8 MHz!
 void MPU_9250::MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz)
         {
-            float q1 = q[0], q2 = q[1], q3 = q[2], q4 = q[3];   // short name local variable for readability
+            float q1 = q.w, q2 = q.x, q3 = q.y, q4 = q.z;   // short name local variable for readability
             float norm;
             float hx, hy, _2bx, _2bz;
             float s1, s2, s3, s4;
@@ -91,10 +91,10 @@ void MPU_9250::MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, 
             q4 += qDot4 * deltat;
             norm = sqrt(q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4);    // normalise quaternion
             norm = 1.0f/norm;
-            q[0] = q1 * norm;
-            q[1] = q2 * norm;
-            q[2] = q3 * norm;
-            q[3] = q4 * norm;
+            q.w = q1 * norm;
+            q.x = q2 * norm;
+            q.y = q3 * norm;
+            q.z = q4 * norm;
 
         }
 
@@ -104,7 +104,7 @@ void MPU_9250::MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, 
  // measured ones.
 void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz)
         {
-            float q1 = q[0], q2 = q[1], q3 = q[2], q4 = q[3];   // short name local variable for readability
+            float q1 = q.w, q2 = q.x, q3 = q.y, q4 = q.z;   // short name local variable for readability
             float norm;
             float hx, hy, bx, bz;
             float vx, vy, vz, wx, wy, wz;
@@ -187,10 +187,10 @@ void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, fl
             // Normalise quaternion
             norm = sqrt(q1 * q1 + q2 * q2 + q3 * q3 + q4 * q4);
             norm = 1.0f / norm;
-            q[0] = q1 * norm;
-            q[1] = q2 * norm;
-            q[2] = q3 * norm;
-            q[3] = q4 * norm;
+            q.w = q1 * norm;
+            q.x = q2 * norm;
+            q.y = q3 * norm;
+            q.z = q4 * norm;
 
         }
 
@@ -275,9 +275,9 @@ void MPU_9250::update()
 
     readMagData(magCount);  // Read the x/y/z adc values
     getMres();
-    magbias[0] = +100.;  // User environmental x-axis correction in milliGauss, should be automatically calculated
-    magbias[1] = +120.;  // User environmental x-axis correction in milliGauss
-    magbias[2] = -200.;  // User environmental x-axis correction in milliGauss
+    magbias[0] = 0;//+100.;  // User environmental x-axis correction in milliGauss, should be automatically calculated
+    magbias[1] = 0;//+120.;  // User environmental x-axis correction in milliGauss
+    magbias[2] = 0;//-200.;  // User environmental x-axis correction in milliGauss
 
     // Calculate the magnetometer values in milliGauss
     // Include factory calibration per data sheet and user environmental corrections
@@ -314,10 +314,10 @@ void MPU_9250::update()
     delt_t = millis() - count;
     if (delt_t > 10) { // update Serial once per ten miliseconds independent of read rate
 
-    int16_t q0int = q[0] * 16384;
-    int16_t q1int = q[1] * 16384;
-    int16_t q2int = q[2] * 16384;
-    int16_t q3int = q[3] * 16384;
+    int16_t q0int = q.w * 16384;
+    int16_t q1int = q.x * 16384;
+    int16_t q2int = q.y * 16384;
+    int16_t q3int = q.z * 16384;
 
     byte q01 = q0int & 0xFF;
     byte q00 = (q0int >> 8) & 0xFF;
@@ -421,9 +421,9 @@ uint8_t MPU_9250::dmpGetLinearAccel(float *v, float *vRaw, float *gravity) {
 }
 
 uint8_t MPU_9250::dmpGetGravity(float *g) {
-    g[0]  = 2 * (q[1]*q[3] - q[0]*q[2]);
-    g[1]  = 2 * (q[0]*q[1] + q[2]*q[3]);
-    g[2]  = q[0]*q[0] - q[1]*q[1] - q[2]*q[2] + q[3]*q[3];
+    g[0]  = 2 * (q.x*q.z - q.w*q.y);
+    g[1]  = 2 * (q.w*q.x + q.y*q.z);
+    g[2]  = q.w*q.w - q.x*q.x - q.y*q.y + q.z*q.z;
     return 0;
 }
 
