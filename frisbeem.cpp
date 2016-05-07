@@ -7,7 +7,7 @@ void Frisbeem::initlaize(){
   _com.log("Go For Initlaize");
   //Update MPU
   _com.log("Go For Brains");
-  _mpu.initlaize();
+  _mpu.initialize();
   //Update Strip
   _com.log("Go For Lights");
   _lights.initlaize();
@@ -40,7 +40,28 @@ void Frisbeem::update(){
   _motionState.handleInput( newEvent );
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
+  updateThetaOffset();
   _lights.update();
+}
+
+void Frisbeem::updateThetaOffset()
+{
+  thisTime = micros();
+
+  //Integrate For Theta
+  thetaOffset -= _mpu.gz * (thisTime - lastTime) / 1000000;
+  //Catch & Adjust For Theta Over Limit
+  if (thetaOffset > 360){
+    thetaOffset -= 360;
+  }
+  else if (thetaOffset < 0){
+    thetaOffset += 360;
+  }
+
+  lightOffset = thetaOffset / degPerPixel;
+
+  //Preserve Time Calculations
+  lastTime = thisTime;
 }
 
 void Frisbeem::processEvents()

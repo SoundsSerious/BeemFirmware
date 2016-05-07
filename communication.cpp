@@ -27,7 +27,7 @@ void COM::log(String message){
         Serial.println( message );
       }
     else if (client.connected()){
-      server.write( message );
+      server.println( message );
     }
   }
 }

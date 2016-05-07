@@ -45,6 +45,13 @@ public:
   virtual void initlaize();
   virtual void update();
 
+  //Sandbox Functions
+  unsigned long lastTime,thisTime;
+  int lightOffset = 0;
+  float thetaOffset = 0;
+  float degPerPixel = 360/ NUM_LED ;
+  void updateThetaOffset();
+
   //Event Functions
   Event genNextEvent();
   Event *getCurrentEvent();

@@ -463,7 +463,7 @@ class MPU_9250 {
           }
 
 
-  void initlaize()
+  void initialize()
   {
     Wire.begin();
   //  TWBR = 12;  // 400 kbit/sec I2C speed

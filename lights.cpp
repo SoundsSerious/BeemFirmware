@@ -19,7 +19,7 @@ void Lights::update()
     delay(250);
   }
   else{
-    quarters( wheel(10), 0 );
+    quarters( wheel(10), wheel(100), frisbeem.lightOffset );
     _strip.show();
   }
 }
@@ -43,7 +43,7 @@ void Lights::rainbow(uint8_t wait) {
 
 }
 
-void Lights::quarters(uint32_t c, uint8_t offset)
+void Lights::quarters(uint32_t c,uint32_t c2, uint8_t offset)
 { //Split Lights by 4 and color a quarter
   uint16_t i;
   int numPixels = _strip.numPixels();
@@ -56,14 +56,14 @@ void Lights::quarters(uint32_t c, uint8_t offset)
     if (current < 0){ //Normal Assignment
       current = numPixels + current;
     }
-    if ( current < numPixels / 4){
+    if ( i < numPixels / 4){
       _strip.setPixelColor(current, c);
     }
-    else if ( (current-1) < numPixels * 1 / 2){
+    else if ( i < numPixels * 1 / 2){
       _strip.setPixelColor(current, _strip.Color(0,0,0));
     }
-    else if ( (current-1) < numPixels * 3 / 4){
-      _strip.setPixelColor(current, c);
+    else if ( (i-1) < numPixels * 3 / 4){
+      _strip.setPixelColor(current, c2);
     }
     else{
       _strip.setPixelColor(current, _strip.Color(0,0,0));
