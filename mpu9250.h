@@ -100,11 +100,12 @@ class MPU_9250 {
   uint32_t Now = 0;        // used to calculate integration interval
 
   float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
+  VectorFloat A,G,M;
   //float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
   Quaternion q;
   float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
-  uint8_t teapotPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
+  uint8_t orientationPacket[14] = { '$', 0x02, 0,0, 0,0, 0,0, 0,0, 0x00, 0x00, '\r', '\n' };
 
 
   // Implementation of Sebastian Madgwick's "...efficient orientation filter for... inertial/magnetic sensor arrays"

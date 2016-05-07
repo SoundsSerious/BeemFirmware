@@ -23,7 +23,7 @@ public:
   virtual void onNotify( Event &event);
 
   //Color Functions
-  void rainbow( uint8_t wait );
+  void rainbow( uint8_t wait, uint8_t offset);
   void colorAll(uint32_t c, uint8_t wait);
   void colorWipe(uint32_t c, uint8_t wait);
   void quarters(uint32_t c,uint32_t c2, uint8_t offset);

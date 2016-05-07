@@ -19,7 +19,7 @@ void Lights::update()
     delay(250);
   }
   else{
-    quarters( wheel(10), wheel(100), frisbeem.lightOffset );
+    rainbow( 4, frisbeem.lightOffset );
     _strip.show();
   }
 }
@@ -29,13 +29,19 @@ void Lights::onNotify( Event &event)
 };
 
 // Cool and useful color functions
-void Lights::rainbow(uint8_t wait) {
+void Lights::rainbow(uint8_t wait,uint8_t offset) {
   uint16_t i;
+  int current;
+  int numPixels = _strip.numPixels();
   if (whl > 255){
     whl = 0;
   }
-  for(i=0; i<_strip.numPixels(); i++) {
-    _strip.setPixelColor(i, wheel((i+whl)));
+  for(i=0; i< numPixels; i++) {
+      current = i - offset;
+      if (current < 0){ //Normal Assignment
+        current = numPixels + current;
+      }
+    _strip.setPixelColor(current, wheel((i+whl)));
   }
   whl++;
   _strip.show();

@@ -309,46 +309,46 @@ void MPU_9250::update()
 
 
     delt_t = millis() - count;
-
+    #if SEND_ORIENT_DATA
     // Serial print and/or display at 0.5 s rate independent of data rates
     delt_t = millis() - count;
-    if (delt_t > 10) { // update Serial once per ten miliseconds independent of read rate
+      if (delt_t > 10) { // update Serial once per ten miliseconds independent of read rate
 
-    int16_t q0int = q.w * 16384;
-    int16_t q1int = q.x * 16384;
-    int16_t q2int = q.y * 16384;
-    int16_t q3int = q.z * 16384;
+        int16_t q0int = q.w * 16384;
+        int16_t q1int = q.x * 16384;
+        int16_t q2int = q.y * 16384;
+        int16_t q3int = q.z * 16384;
 
-    byte q01 = q0int & 0xFF;
-    byte q00 = (q0int >> 8) & 0xFF;
+        byte q01 = q0int & 0xFF;
+        byte q00 = (q0int >> 8) & 0xFF;
 
-    byte q11 = q1int & 0xFF;
-    byte q10 = (q1int >> 8) & 0xFF;
+        byte q11 = q1int & 0xFF;
+        byte q10 = (q1int >> 8) & 0xFF;
 
-    byte q21 = q2int & 0xFF;
-    byte q20 = (q2int >> 8) & 0xFF;
+        byte q21 = q2int & 0xFF;
+        byte q20 = (q2int >> 8) & 0xFF;
 
-    byte q31 = q3int & 0xFF;
-    byte q30 = (q3int >> 8) & 0xFF;
+        byte q31 = q3int & 0xFF;
+        byte q30 = (q3int >> 8) & 0xFF;
 
-    //#if SEND_ORIENT_DATA
-    teapotPacket[2] = q00;
-    teapotPacket[3] = q01;
-    teapotPacket[4] = q10;
-    teapotPacket[5] = q11;
-    teapotPacket[6] = q20;
-    teapotPacket[7] = q21;
-    teapotPacket[8] = q30;
-    teapotPacket[9] = q31;
+        orientationPacket[2] = q00;
+        orientationPacket[3] = q01;
+        orientationPacket[4] = q10;
+        orientationPacket[5] = q11;
+        orientationPacket[6] = q20;
+        orientationPacket[7] = q21;
+        orientationPacket[8] = q30;
+        orientationPacket[9] = q31;
 
-    Serial.write(teapotPacket, 14);
-    teapotPacket[11]++;
-    //#endif
+        Serial.write(orientationPacket, 14);
+        teapotPacket[11]++;
 
-    count = millis();
-    sumCount = 0;
-    sum = 0;
-    }
+
+        count = millis();
+        sumCount = 0;
+        sum = 0;
+      }
+    #endif
 
 }
 
