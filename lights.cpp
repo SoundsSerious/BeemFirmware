@@ -19,9 +19,9 @@ void Lights::update()
     delay(250);
   }
   else{
-    rainbow( 4, frisbeem.lightOffset );
-    _strip.show();
+    rainbow( 2, frisbeem.lightOffset );
   }
+  off();
 }
 
 void Lights::onNotify( Event &event)
@@ -42,6 +42,9 @@ void Lights::rainbow(uint8_t wait,uint8_t offset) {
         current = numPixels + current;
       }
     _strip.setPixelColor(current, wheel((i+whl)));
+    if ( i == 0 ){
+      _strip.setPixelColor(current, _strip.Color(255,0,0));
+    }
   }
   whl++;
   _strip.show();
