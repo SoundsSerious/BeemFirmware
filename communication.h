@@ -13,19 +13,33 @@ public:
   Client *_clients[MAX_CLIENTS];
   int numberOfClients;
 
-  int* serverIP = {192,168,1,80}
-  TCPServer server = TCPServer(BEEMO_PORT);
+  byte serverIP[4] = {192,168,1,80};
+  TCPClient beemoServer;
+
+  //TCPServer server = TCPServer(BEEMO_PORT);
   TCPClient client;
 
+  //Event Timing
+  unsigned long retryConnectTime=2000;
   unsigned long old_time;
   uint8_t retry_count;
+  uint8_t retry_limit = 10;
+  int _tick = 501; //Tick Greater than tickCount will print first time
+  int tickCount = 500;
+
 
   String input;
   bool debugMode = true;
+  bool writeNow = true; //Tells log to write
+  bool superDebugMode = true; //Write All The Things
+  bool alwaysSerial = true;
 
+  //Important Messages
   void log(String message);
   void initialize();
   void update();
+
+  void tick();
   void initialize_cloud();
   int initialize_could_offset(String commandName, int message);
   void handleConnecting();

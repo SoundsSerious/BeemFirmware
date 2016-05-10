@@ -1,5 +1,6 @@
 #include "communication.h"
 
+
 void COM::initialize(){
   // The following line will wait until you connect to the Spark.io using
   //serial and hit enter. This gives you enough time to start capturing the
@@ -12,9 +13,29 @@ void COM::initialize(){
   log(WiFi.gatewayIP());
   log(WiFi.SSID());
 
-  //Start The Server
-  server.begin();
+  //Start The Server Hijacking This for now
+  beemoServer.connect(serverIP,BEEMO_PORT);
+  if (beemoServer.connected()){
+    log("successfully connected to beemo server");
+  }
+  else{
+    log("beemo server connection failed");
+  }
 
+}
+
+void COM::tick(){
+  _tick += 1;
+  if (_tick == tickCount){
+    writeNow = true;
+    log("tick...");
+  }
+  else{
+    writeNow = false;
+  }
+  if (_tick > tickCount){
+    _tick = 0;
+  }
 }
 
 void COM::update(){
@@ -22,54 +43,60 @@ void COM::update(){
 }
 
 void COM::log(String message){
-  if (debugMode){
-    if (Serial.available()){
+  if (writeNow || superDebugMode){ //Outer Loop Is set by events
+    if (debugMode || superDebugMode){ //Default Debug Handler
+      if (beemoServer.connected()){
+        beemoServer.print(Time.timeStr());
+        beemoServer.print("\t");
+        beemoServer.println( message );
+      }
+    else if(superDebugMode || alwaysSerial){
+        Serial.print(Time.timeStr());
+        Serial.print("\t");
         Serial.println( message );
       }
-    else if (client.connected()){
-      server.println( message );
     }
   }
 }
 
 void COM::handleConnecting(){
   //Got this from web... never really worked as intended
-  if(millis() - old_time >= 2000){
-     if(retry_count < 10){
-         if(!WiFi.ready()){
-             WiFi.connect();
-             retry_count++;
+  unsigned long thisTime = millis();
 
-         }
-         else if (!Particle.connected()){
-             Particle.connect();
-             retry_count++;
-         }
-     }
-     else{
-         WiFi.off();
-         retry_count = 0;
-         WiFi.on();
-     }
-     old_time = millis();
+  if(thisTime - old_time >= retryConnectTime){
+       log("Connecting To Beemo Server..");
+       beemoServer.connect(serverIP,BEEMO_PORT);
+       if (beemoServer.connected()){
+         writeNow = true;
+         log("Beemo Server Now Connected...");
+       }
+       beemoServer.flush();
+       //retry_count++;
+       old_time = thisTime;
+  }
+  if (WiFi.ready()){
+    if (Particle.connected() == false) {
+      log("Connecting To Cloud");
+      Particle.connect();
+    }
   }
 }
 
 void COM::handleNetworking(){
   //Client Connection
-  if (client.connected()) {
+  if (beemoServer.connected()) {
     // echo all available bytes back to the client
     log("Client Connected...");
 
     //Check If Client Connected
-    if (client.available()){
+    if (beemoServer.available()){
       String thisCom;
       thisCom.reserve(256);
       thisCom = "";
       int count = 0;
 
       //Read Data While Available
-      while (client.available()) {
+      while (beemoServer.available()) {
         input = client.read();
         thisCom += input;
         if (input.length()) count++;
@@ -78,13 +105,15 @@ void COM::handleNetworking(){
           break;
         }
       }
-      Serial.print("In"); Serial.println(thisCom);
-      client.flush();
+      log(String("Got ")+thisCom);
+      beemoServer.flush();
     }
   } else {
     // if no client is yet connected, check for a new connection and wait
-    log("Checking For New Client...");
-    client = server.available();
+    log("No Client...");
+    beemoServer.stop();
+    delay(1);
+    handleConnecting();
   }
 }
 
