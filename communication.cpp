@@ -1,5 +1,6 @@
 #include "communication.h"
 
+
 void COM::initialize(){
   // The following line will wait until you connect to the Spark.io using
   //serial and hit enter. This gives you enough time to start capturing the
@@ -27,6 +28,7 @@ void COM::tick(){
   _tick += 1;
   if (_tick == tickCount){
     writeNow = true;
+    log("tick...");
   }
   else{
     writeNow = false;
@@ -41,13 +43,17 @@ void COM::update(){
 }
 
 void COM::log(String message){
-  if (writeNow){ //Outer Loop Is set by events
-    if (debugMode){ //Default Debug Handler
-      //Serial.println( message );
+  if (writeNow || superDebugMode){ //Outer Loop Is set by events
+    if (debugMode || superDebugMode){ //Default Debug Handler
       if (beemoServer.connected()){
         beemoServer.print(Time.timeStr());
         beemoServer.print("\t");
         beemoServer.println( message );
+      }
+    else if(superDebugMode || alwaysSerial){
+        Serial.print(Time.timeStr());
+        Serial.print("\t");
+        Serial.println( message );
       }
     }
   }
@@ -55,24 +61,24 @@ void COM::log(String message){
 
 void COM::handleConnecting(){
   //Got this from web... never really worked as intended
-  if(millis() - old_time >= 2000){
-     if(retry_count < 10){
-         if(!WiFi.ready()){
-             WiFi.connect();
-             retry_count++;
+  unsigned long thisTime = millis();
 
-         }
-         else if (!Particle.connected()){
-             Particle.connect();
-             retry_count++;
-         }
-     }
-     else{
-         WiFi.off();
-         retry_count = 0;
-         WiFi.on();
-     }
-     old_time = millis();
+  if(thisTime - old_time >= retryConnectTime){
+       log("Connecting To Beemo Server..");
+       beemoServer.connect(serverIP,BEEMO_PORT);
+       if (beemoServer.connected()){
+         writeNow = true;
+         log("Beemo Server Now Connected...");
+       }
+       beemoServer.flush();
+       //retry_count++;
+       old_time = thisTime;
+  }
+  if (WiFi.ready()){
+    if (Particle.connected() == false) {
+      log("Connecting To Cloud");
+      Particle.connect();
+    }
   }
 }
 
@@ -104,8 +110,10 @@ void COM::handleNetworking(){
     }
   } else {
     // if no client is yet connected, check for a new connection and wait
-    log("Checking For Beemo Server...");
-    beemoServer.connect(serverIP,BEEMO_PORT);
+    log("No Client...");
+    beemoServer.stop();
+    delay(1);
+    handleConnecting();
   }
 }
 

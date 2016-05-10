@@ -20,14 +20,19 @@ public:
   TCPClient client;
 
   //Event Timing
+  unsigned long retryConnectTime=2000;
   unsigned long old_time;
   uint8_t retry_count;
-  int _tick = 100; //Tick Greater than tickCount will print first time
-  int tickCount = 99;
+  uint8_t retry_limit = 10;
+  int _tick = 501; //Tick Greater than tickCount will print first time
+  int tickCount = 500;
+
 
   String input;
   bool debugMode = true;
   bool writeNow = true; //Tells log to write
+  bool superDebugMode = true; //Write All The Things
+  bool alwaysSerial = true;
 
   //Important Messages
   void log(String message);
