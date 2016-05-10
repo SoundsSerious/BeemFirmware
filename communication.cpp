@@ -74,12 +74,6 @@ void COM::handleConnecting(){
        //retry_count++;
        old_time = thisTime;
   }
-  if (WiFi.ready()){
-    if (Particle.connected() == false) {
-      log("Connecting To Cloud");
-      Particle.connect();
-    }
-  }
 }
 
 void COM::handleNetworking(){

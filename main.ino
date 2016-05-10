@@ -18,11 +18,19 @@ void setup() {
 Wire.setSpeed(I2C_SPEED);
 
 frisbeem.initlaize();
-
+Particle.connect();
 }
 
 void loop() {
 
 frisbeem.update();
 
+/*if (Particle.connected() == false) {
+  log("Connecting To Cloud");
+
+}*/
+
+  /*if (WiFi.ready()){
+
+  }*/
 }
