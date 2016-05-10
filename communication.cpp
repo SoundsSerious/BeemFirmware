@@ -70,6 +70,10 @@ void COM::handleConnecting(){
          writeNow = true;
          log("Beemo Server Now Connected...");
        }
+       {
+          log("disconnecting.");
+          beemoServer.stop();
+       }
        beemoServer.flush();
        //retry_count++;
        old_time = thisTime;
@@ -102,12 +106,6 @@ void COM::handleNetworking(){
       log(String("Got ")+thisCom);
       beemoServer.flush();
     }
-  } else {
-    // if no client is yet connected, check for a new connection and wait
-    log("No Client...");
-    beemoServer.stop();
-    delay(1);
-    handleConnecting();
   }
 }
 
