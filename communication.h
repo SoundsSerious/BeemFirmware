@@ -13,8 +13,10 @@ public:
   Client *_clients[MAX_CLIENTS];
   int numberOfClients;
 
-  int* serverIP = {192,168,1,80}
-  TCPServer server = TCPServer(BEEMO_PORT);
+  byte serverIP[4] = {192,168,1,80};
+  TCPClient beemoServer;
+
+  //TCPServer server = TCPServer(BEEMO_PORT);
   TCPClient client;
 
   unsigned long old_time;

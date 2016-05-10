@@ -12,8 +12,14 @@ void COM::initialize(){
   log(WiFi.gatewayIP());
   log(WiFi.SSID());
 
-  //Start The Server
-  server.begin();
+  //Start The Server Hijacking This for now
+  beemoServer.connect(serverIP,BEEMO_PORT);
+  if (beemoServer.connected()){
+    log("successfully connected to beemo server");
+  }
+  else{
+    log("beemo server connection failed");
+  }
 
 }
 
@@ -23,12 +29,8 @@ void COM::update(){
 
 void COM::log(String message){
   if (debugMode){
-    if (Serial.available()){
-        Serial.println( message );
-      }
-    else if (client.connected()){
-      server.println( message );
-    }
+    Serial.println( message );
+    beemoServer.println( message );
   }
 }
 
@@ -57,19 +59,19 @@ void COM::handleConnecting(){
 
 void COM::handleNetworking(){
   //Client Connection
-  if (client.connected()) {
+  if (beemoServer.connected()) {
     // echo all available bytes back to the client
     log("Client Connected...");
 
     //Check If Client Connected
-    if (client.available()){
+    if (beemoServer.available()){
       String thisCom;
       thisCom.reserve(256);
       thisCom = "";
       int count = 0;
 
       //Read Data While Available
-      while (client.available()) {
+      while (beemoServer.available()) {
         input = client.read();
         thisCom += input;
         if (input.length()) count++;
@@ -78,13 +80,13 @@ void COM::handleNetworking(){
           break;
         }
       }
-      Serial.print("In"); Serial.println(thisCom);
-      client.flush();
+      log(String("Got ")+thisCom);
+      beemoServer.flush();
     }
   } else {
     // if no client is yet connected, check for a new connection and wait
-    log("Checking For New Client...");
-    client = server.available();
+    log("Checking For Beemo Server...");
+    beemoServer.connect(serverIP,BEEMO_PORT);
   }
 }
 
