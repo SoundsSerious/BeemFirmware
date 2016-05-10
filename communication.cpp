@@ -70,6 +70,7 @@ void COM::handleConnecting(){
          writeNow = true;
          log("Beemo Server Now Connected...");
        }
+       else if (!client.connected())
        {
           log("disconnecting.");
           beemoServer.stop();
