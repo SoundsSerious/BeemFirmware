@@ -261,17 +261,17 @@ void MPU_9250::update()
     getAres();
 
     // Now we'll calculate the accleration value into actual g's
-    ax = (float)accelCount[0]*aRes; // - accelBias[0];  // get actual g value, this depends on scale being set
-    ay = (float)accelCount[1]*aRes; // - accelBias[1];
-    az = (float)accelCount[2]*aRes; // - accelBias[2];
+    A.x = (float)accelCount[0]*aRes; // - accelBias[0];  // get actual g value, this depends on scale being set
+    A.y = (float)accelCount[1]*aRes; // - accelBias[1];
+    A.z = (float)accelCount[2]*aRes; // - accelBias[2];
 
     readGyroData(gyroCount);  // Read the x/y/z adc values
     getGres();
 
     // Calculate the gyro value into actual degrees per second
-    gx = (float)gyroCount[0]*gRes;  // get actual gyro value, this depends on scale being set
-    gy = (float)gyroCount[1]*gRes;
-    gz = (float)gyroCount[2]*gRes;
+    G.x = (float)gyroCount[0]*gRes;  // get actual gyro value, this depends on scale being set
+    G.y = (float)gyroCount[1]*gRes;
+    G.z = (float)gyroCount[2]*gRes;
 
     readMagData(magCount);  // Read the x/y/z adc values
     getMres();
@@ -281,9 +281,9 @@ void MPU_9250::update()
 
     // Calculate the magnetometer values in milliGauss
     // Include factory calibration per data sheet and user environmental corrections
-    mx = (float)magCount[0]*mRes*magCalibration[0] - magbias[0];  // get actual magnetometer value, this depends on scale being set
-    my = (float)magCount[1]*mRes*magCalibration[1] - magbias[1];
-    mz = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
+    M.x = (float)magCount[0]*mRes*magCalibration[0] - magbias[0];  // get actual magnetometer value, this depends on scale being set
+    M.y = (float)magCount[1]*mRes*magCalibration[1] - magbias[1];
+    M.z = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
   }
   else{
     //frisbeem._com.logln(" No Interrupt ");
@@ -303,52 +303,52 @@ void MPU_9250::update()
   // in the LSM9DS0 sensor. This rotation can be modified to allow any convenient orientation convention.
   // This is ok by aircraft orientation standards!
   // Pass gyro rate as rad/s
-  MadgwickQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f,  my,  mx, mz);
-  //MahonyQuaternionUpdate(ax, ay, az, gx*PI/180.0f, gy*PI/180.0f, gz*PI/180.0f, my, mx, mz);
+  //MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
+  MahonyQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
 
 
 
     delt_t = millis() - count;
-    #if SEND_ORIENT_DATA
+    //#if SEND_ORIENT_DATA
     // Serial print and/or display at 0.5 s rate independent of data rates
     delt_t = millis() - count;
-      if (delt_t > 10) { // update Serial once per ten miliseconds independent of read rate
+    if (delt_t > 10) { // update Serial once per ten miliseconds independent of read rate
 
-        int16_t q0int = q.w * 16384;
-        int16_t q1int = q.x * 16384;
-        int16_t q2int = q.y * 16384;
-        int16_t q3int = q.z * 16384;
+      int16_t q0int = q.w * 16384;
+      int16_t q1int = q.x * 16384;
+      int16_t q2int = q.y * 16384;
+      int16_t q3int = q.z * 16384;
 
-        byte q01 = q0int & 0xFF;
-        byte q00 = (q0int >> 8) & 0xFF;
+      byte q01 = q0int & 0xFF;
+      byte q00 = (q0int >> 8) & 0xFF;
 
-        byte q11 = q1int & 0xFF;
-        byte q10 = (q1int >> 8) & 0xFF;
+      byte q11 = q1int & 0xFF;
+      byte q10 = (q1int >> 8) & 0xFF;
 
-        byte q21 = q2int & 0xFF;
-        byte q20 = (q2int >> 8) & 0xFF;
+      byte q21 = q2int & 0xFF;
+      byte q20 = (q2int >> 8) & 0xFF;
 
-        byte q31 = q3int & 0xFF;
-        byte q30 = (q3int >> 8) & 0xFF;
+      byte q31 = q3int & 0xFF;
+      byte q30 = (q3int >> 8) & 0xFF;
 
-        orientationPacket[2] = q00;
-        orientationPacket[3] = q01;
-        orientationPacket[4] = q10;
-        orientationPacket[5] = q11;
-        orientationPacket[6] = q20;
-        orientationPacket[7] = q21;
-        orientationPacket[8] = q30;
-        orientationPacket[9] = q31;
+      orientationPacket[2] = q00;
+      orientationPacket[3] = q01;
+      orientationPacket[4] = q10;
+      orientationPacket[5] = q11;
+      orientationPacket[6] = q20;
+      orientationPacket[7] = q21;
+      orientationPacket[8] = q30;
+      orientationPacket[9] = q31;
 
-        Serial.write(orientationPacket, 14);
-        teapotPacket[11]++;
+      Serial.write(orientationPacket, 14);
+      orientationPacket[11]++;
 
 
-        count = millis();
-        sumCount = 0;
-        sum = 0;
-      }
-    #endif
+      count = millis();
+      sumCount = 0;
+      sum = 0;
+    }
+    //#endif
 
 }
 

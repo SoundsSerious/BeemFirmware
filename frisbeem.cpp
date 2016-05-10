@@ -49,7 +49,7 @@ void Frisbeem::updateThetaOffset()
   thisTime = micros();
 
   //Integrate For Theta
-  thetaOffset -= _mpu.gz * (thisTime - lastTime) / 1000000;
+  thetaOffset -= _mpu.G.z * (thisTime - lastTime) / 1000000;
   //Catch & Adjust For Theta Over Limit
   if (thetaOffset > 360){
     thetaOffset -= 360;
@@ -84,7 +84,7 @@ void Frisbeem::processEvents()
 
 Event Frisbeem::genNextEvent()
 { //For Now Look At Omegea (w)
-  return Event( _mpu.gz );
+  return Event( _mpu.G.z );
 }
 
 
