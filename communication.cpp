@@ -23,14 +23,33 @@ void COM::initialize(){
 
 }
 
+void COM::tick(){
+  _tick += 1;
+  if (_tick == tickCount){
+    writeNow = true;
+  }
+  else{
+    writeNow = false;
+  }
+  if (_tick > tickCount){
+    _tick = 0;
+  }
+}
+
 void COM::update(){
   handleNetworking();
 }
 
 void COM::log(String message){
-  if (debugMode){
-    Serial.println( message );
-    beemoServer.println( message );
+  if (writeNow){ //Outer Loop Is set by events
+    if (debugMode){ //Default Debug Handler
+      //Serial.println( message );
+      if (beemoServer.connected()){
+        beemoServer.print(Time.timeStr());
+        beemoServer.print("\t");
+        beemoServer.println( message );
+      }
+    }
   }
 }
 

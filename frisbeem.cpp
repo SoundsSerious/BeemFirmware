@@ -21,6 +21,10 @@ void Frisbeem::initlaize(){
 }
 
 void Frisbeem::update(){
+  //Tick The Log So It Can Output Periodically
+  _com.tick();
+
+  //Handle Other Stuff
   _com.log("Updating...");
   //Update MPU
   _com.log("Updating MPU");

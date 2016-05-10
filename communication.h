@@ -19,15 +19,22 @@ public:
   //TCPServer server = TCPServer(BEEMO_PORT);
   TCPClient client;
 
+  //Event Timing
   unsigned long old_time;
   uint8_t retry_count;
+  int _tick = 100; //Tick Greater than tickCount will print first time
+  int tickCount = 99;
 
   String input;
   bool debugMode = true;
+  bool writeNow = true; //Tells log to write
 
+  //Important Messages
   void log(String message);
   void initialize();
   void update();
+
+  void tick();
   void initialize_cloud();
   int initialize_could_offset(String commandName, int message);
   void handleConnecting();
