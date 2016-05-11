@@ -18,7 +18,7 @@ class Frisbeem: public Subject, public Entity
 {
 public:
   Frisbeem(): _mpu(), _lights(), _com(){};//Constructor
-  virtual ~Frisbeem() {}; //Destructor
+  virtual ~Frisbeem() {}; //Destructor (of doooom)
 
   //Physical parameters
 

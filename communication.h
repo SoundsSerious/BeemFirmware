@@ -20,12 +20,12 @@ public:
   TCPClient client;
 
   //Event Timing
-  unsigned long retryConnectTime=5000;
+  unsigned long retryConnectTime=60000;
   unsigned long old_time;
   uint8_t retry_count;
   uint8_t retry_limit = 10;
-  int _tick = 11; //Tick Greater than tickCount will print first time
-  int tickCount = 10;
+  int tickCount = 200;
+  int _tick = tickCount + 1; //Tick Greater than tickCount will print first time
 
 
   String input;
@@ -35,14 +35,14 @@ public:
   bool alwaysSerial = false;
 
   //Important Messages
-  void log(String message);
+  void log(String message,bool force=false);
   void initialize();
   void update();
 
   void tick();
   void initialize_cloud();
   int initialize_could_offset(String commandName, int message);
-  void handleConnecting();
+  void handleConnecting(bool startUp=false);
   void handleNetworking();
   void serial_RealWorldData();
   void serial_RawAclGyrVals();

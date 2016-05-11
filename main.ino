@@ -6,7 +6,7 @@
 //using namespace std;
 //WARNING: I SUCK AT SPELLING. FEEL FREE TO FIX ANY SPELLING ERRORS XP
 
-SYSTEM_MODE(MANUAL); //Switch to manual when away from network
+//SYSTEM_MODE(MANUAL); //Switch to manual when away from network
 //SYSTEM_MODE( SEMI_AUTOMATIC ); //Switch to manual when away from network
 Frisbeem frisbeem;
 
@@ -17,15 +17,16 @@ void setup() {
 
 Wire.setSpeed(I2C_SPEED);
 
-Particle.connect();
+//Particle.connect();
 frisbeem.initlaize();
+frisbeem._com.log("Finish Setup");
 
 }
 
 void loop() {
 
 frisbeem.update();
-Particle.process();
+//Particle.process();
 /*if (Particle.connected() == false) {
   log("Connecting To Cloud");
 

@@ -2,26 +2,14 @@
 
 
 void COM::initialize(){
-  // The following line will wait until you connect to the Spark.io using
-  //serial and hit enter. This gives you enough time to start capturing the
-  //data when you are ready instead of just spewing data to the UART.
-  Serial.begin( 115200 );
-  log("Initlaize");
-  // So, open a serial connection using something like:
+  Serial.begin( 115200 ); //Open Serial...Mmm breakfast
+  handleConnecting( true ); //Pass True On Startup. ESto Moy Importante
+
+  log("Initlaize:");
   log(WiFi.localIP());
   log(WiFi.subnetMask());
   log(WiFi.gatewayIP());
   log(WiFi.SSID());
-
-  //Start The Server Hijacking This for now
-  beemoServer.connect(serverIP,BEEMO_PORT);
-  if (beemoServer.connected()){
-    log("successfully connected to beemo server");
-  }
-  else{
-    log("beemo server connection failed");
-  }
-
 }
 
 void COM::tick(){
@@ -39,45 +27,57 @@ void COM::tick(){
 }
 
 void COM::update(){
-  handleNetworking();
+  //handleNetworking();
+  handleConnecting();
 }
 
-void COM::log(String message){
-  if (writeNow || superDebugMode){ //Outer Loop Is set by events
+void COM::log(String message, bool force){
+  //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
+  //We will default to serial always for zeee robust debugging
+
+  bool serialWritten = false;//We only want to write serial once, so we'll set this flag on write
+  if ( alwaysSerial || ( superDebugMode && writeNow) || force){
+    Serial.print(Time.timeStr());
+    Serial.print("\t");
+    Serial.println(message);
+    serialWritten = true;
+  }
+  if (writeNow || (superDebugMode && writeNow )){ //Outer Loop Is set by events
     if (debugMode || superDebugMode){ //Default Debug Handler
       if (beemoServer.connected()){
         beemoServer.print(Time.timeStr());
         beemoServer.print("\t");
         beemoServer.println( message );
       }
-    else if(superDebugMode || alwaysSerial){
-        Serial.print(Time.timeStr());
-        Serial.print("\t");
-        Serial.println( message );
+      else if (!serialWritten){
+          Serial.print(Time.timeStr());
+          Serial.print("\t");
+          Serial.println( message );
       }
     }
   }
 }
 
-void COM::handleConnecting(){
-  //Got this from web... never really worked as intended
+void COM::handleConnecting(bool startUp){
+  //If the server isn't connected OR its startup we'll check if the time is right,
+  //Then try to connect. If we do connect, we'll write this cycle. If we don't connect
+  //We'll dis arm the bomb... i mean disconnect, and flush the server.
   unsigned long thisTime = millis();
-
-  if(thisTime - old_time >= retryConnectTime){
-       log("Connecting To Beemo Server..");
-       beemoServer.connect(serverIP,BEEMO_PORT);
-       if (beemoServer.connected()){
-         writeNow = true;
-         log("Beemo Server Now Connected...");
-       }
-       else if (!client.connected())
-       {
-          log("disconnecting.");
-          beemoServer.stop();
-       }
-       beemoServer.flush();
-       //retry_count++;
-       old_time = thisTime;
+  if (!beemoServer.connected() || startUp)
+  { log("Server... Not Connected... Checking Conditions",true);
+    if(((thisTime - old_time) >= retryConnectTime) || startUp){
+      log("Trying To Connect To Beemo Server",true);
+      beemoServer.connect(serverIP,BEEMO_PORT);
+      if (beemoServer.connected()){
+        log("Beemo Server Now Connected...",true);
+      }
+      if (!beemoServer.connected())
+      { //Flush Server... Kill Client to open a socket
+         log("disconnecting.",true);
+         beemoServer.flush();
+         beemoServer.stop();
+      }
+    }
   }
 }
 
@@ -85,8 +85,6 @@ void COM::handleNetworking(){
   //Client Connection
   if (beemoServer.connected()) {
     // echo all available bytes back to the client
-    log("Client Connected...");
-
     //Check If Client Connected
     if (beemoServer.available()){
       String thisCom;
@@ -96,7 +94,7 @@ void COM::handleNetworking(){
 
       //Read Data While Available
       while (beemoServer.available()) {
-        input = client.read();
+        input = beemoServer.read();
         thisCom += input;
         if (input.length()) count++;
         //Attempt to prevent this com overflow
@@ -104,9 +102,11 @@ void COM::handleNetworking(){
           break;
         }
       }
-      log(String("Got ")+thisCom);
-      beemoServer.flush();
     }
+  }
+  if (!beemoServer.connected()){
+    log("Not Connected.... Flushing");
+    beemoServer.flush();
   }
 }
 
