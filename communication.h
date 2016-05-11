@@ -31,8 +31,8 @@ public:
   String input;
   bool debugMode = true;
   bool writeNow = true; //Tells log to write
-  bool superDebugMode = false; //Write All The Things
-  bool alwaysSerial = false;
+  bool superDebugMode = true; //Write All The Things
+  bool alwaysSerial = true;
 
   //Important Messages
   void log(String message,bool force=false);

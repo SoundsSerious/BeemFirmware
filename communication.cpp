@@ -3,7 +3,9 @@
 
 void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
+  delay(300);
   handleConnecting( true ); //Pass True On Startup. ESto Moy Importante
+  delay(100);
 
   log("Initlaize:");
   log(WiFi.localIP());
@@ -28,6 +30,7 @@ void COM::tick(){
 
 void COM::update(){
   //handleNetworking();
+  log("Handle Zee Connecting");
   handleConnecting();
 }
 
@@ -63,8 +66,9 @@ void COM::handleConnecting(bool startUp){
   //Then try to connect. If we do connect, we'll write this cycle. If we don't connect
   //We'll dis arm the bomb... i mean disconnect, and flush the server.
   unsigned long thisTime = millis();
-  if (!beemoServer.connected() || startUp)
-  { log("Server... Not Connected... Checking Conditions",true);
+  log("We're Checking If Connected");
+  if (!beemoServer.connected() || startUp){
+    log("Server... Not Connected... Checking Conditions",true);
     if(((thisTime - old_time) >= retryConnectTime) || startUp){
       log("Trying To Connect To Beemo Server",true);
       beemoServer.connect(serverIP,BEEMO_PORT);

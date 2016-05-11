@@ -17,7 +17,7 @@ void setup() {
 
 Wire.setSpeed(I2C_SPEED);
 
-//Particle.connect();
+delay(100);
 frisbeem.initlaize();
 frisbeem._com.log("Finish Setup");
 
@@ -26,13 +26,5 @@ frisbeem._com.log("Finish Setup");
 void loop() {
 
 frisbeem.update();
-//Particle.process();
-/*if (Particle.connected() == false) {
-  log("Connecting To Cloud");
 
-}*/
-
-  /*if (WiFi.ready()){
-
-  }*/
 }

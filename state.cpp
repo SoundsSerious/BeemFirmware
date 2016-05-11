@@ -2,10 +2,10 @@
 #import "globals.h"
 
 void StateSwitch::initialize(){
-  Serial.println("Pointer Assignment");
+  frisbeem._com.log("Pointer Assignment");
 
   _states.push_back( new MotionState() );
-  Serial.print("Last Item"); Serial.println( _states.back() -> msg );
+  frisbeem._com.log(String("Last Item") + String(_states.back() -> msg ));
 }
 
 int MotionState::handleInput(Event &event)
@@ -51,7 +51,7 @@ int MotionState::handleInput(Event &event)
     if (sleepModeActivated){
      //Turn Off Lights. Switch Arduino to Low Power Consumption.
      frisbeem._com.log("Sleep Mode");
-     
+
     }
     else {
       if (moving) { //Rainbow Pattern
