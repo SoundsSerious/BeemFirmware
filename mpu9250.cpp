@@ -340,7 +340,7 @@ void MPU_9250::update()
       orientationPacket[8] = q30;
       orientationPacket[9] = q31;
 
-      Serial.write(orientationPacket, 14);
+      //Serial.write(orientationPacket, 14);
       orientationPacket[11]++;
 
 

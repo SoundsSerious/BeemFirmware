@@ -19,7 +19,7 @@ void Lights::update()
     delay(250);
   }
   else{
-    rainbow( 2, frisbeem.lightOffset );
+    rainbow( 10, frisbeem.lightOffset );
   }
   off();
 }
