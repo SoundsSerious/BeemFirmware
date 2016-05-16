@@ -29,7 +29,7 @@ void COM::initialize_mdns(){
 
   if (mdns_success) {
     log("Host Name Set Successfully");
-    mdns_success = mdns.addService("tcp", "http", BEEMO_PORT, "frisbeem", subServices);
+    mdns_success = mdns.addService("tcp", "beem", BEEMO_PORT, "frisbeem", subServices);
   }
 
   mdns.addTXTEntry("frsibeem");
