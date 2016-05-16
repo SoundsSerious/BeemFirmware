@@ -1,9 +1,10 @@
 #include "application.h"
-//#include "observer.h"
-//#include "subject.h"
+#include "MDNS.h"
+#include <vector>
+
 
 #define MAX_CLIENTS 4
-#define BEEMO_PORT 8330
+#define BEEMO_PORT 18330
 
 class COM { //, public Subject{
   //In which we send information
@@ -13,11 +14,7 @@ public:
   Client *_clients[MAX_CLIENTS];
   int numberOfClients;
 
-  byte serverIP[4] = {192,168,1,80};
-  TCPClient beemoServer;
-
-  //TCPServer server = TCPServer(BEEMO_PORT);
-  TCPClient client;
+  IPAddress serverIP;
 
   //Event Timing
   unsigned long retryConnectTime=60000;
@@ -27,6 +24,14 @@ public:
   int tickCount = 200;
   int _tick = tickCount + 1; //Tick Greater than tickCount will print first time
 
+  //MDNS
+  String hostname = "frisbeem";
+  String serverMessage = "HTTP/1.1 200 Ok\n\n<html><body><h1>~HELLO BEEMO!~</h1></body></html>\n\n";
+  std::vector<String> subServices;
+  MDNS mdns;
+  TCPServer server = TCPServer(BEEMO_PORT);
+  TCPClient client;
+  bool mdns_success;
 
   String input;
   bool debugMode = true;
@@ -44,6 +49,8 @@ public:
   int initialize_could_offset(String commandName, int message);
   void handleConnecting(bool startUp=false);
   void handleNetworking();
+  void initialize_mdns();
+  void initialize_server();
   void serial_RealWorldData();
   void serial_RawAclGyrVals();
   void serial_sendTelemetry();

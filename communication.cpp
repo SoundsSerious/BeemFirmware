@@ -4,14 +4,41 @@
 void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
   delay(300);
-  handleConnecting( true ); //Pass True On Startup. ESto Moy Importante
-  delay(100);
+
+  //while(!Serial.available()){ Particle.process();};
 
   log("Initlaize:");
   log(WiFi.localIP());
   log(WiFi.subnetMask());
   log(WiFi.gatewayIP());
   log(WiFi.SSID());
+
+  initialize_server();
+  initialize_mdns();
+}
+
+void COM::initialize_server(){
+  server.begin();
+}
+
+void COM::initialize_mdns(){
+  log("Initlaizing MDNS");
+  subServices.push_back("printer");
+  log("Setting MDNS Host Name");
+  mdns_success = mdns.setHostname( hostname );
+
+  if (mdns_success) {
+    log("Host Name Set Successfully");
+    mdns_success = mdns.addService("tcp", "http", BEEMO_PORT, "frisbeem", subServices);
+  }
+
+  mdns.addTXTEntry("frsibeem");
+
+  if (mdns_success) {
+    log("Starting MDNS");
+    mdns_success = mdns.begin();
+    log("MDNS Started");
+  }
 }
 
 void COM::tick(){
@@ -29,89 +56,34 @@ void COM::tick(){
 }
 
 void COM::update(){
-  //handleNetworking();
   log("Handle Zee Connecting");
-  handleConnecting();
+  mdns.processQueries();
+
+  TCPClient client = server.available();
+
+  if (client){
+    while (client.read() != -1);
+
+    client.write(serverMessage);
+    client.flush();
+    delay(5);
+    client.stop();
+  }
 }
 
 void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
-
-  bool serialWritten = false;//We only want to write serial once, so we'll set this flag on write
-  if ( alwaysSerial || ( superDebugMode && writeNow) || force){
-    Serial.print(Time.timeStr());
-    Serial.print("\t");
-    Serial.println(message);
-    serialWritten = true;
-  }
-  if (writeNow || (superDebugMode && writeNow )){ //Outer Loop Is set by events
-    if (debugMode || superDebugMode){ //Default Debug Handler
-      if (beemoServer.connected()){
-        beemoServer.print(Time.timeStr());
-        beemoServer.print("\t");
-        beemoServer.println( message );
-      }
-      else if (!serialWritten){
-          Serial.print(Time.timeStr());
-          Serial.print("\t");
-          Serial.println( message );
-      }
-    }
-  }
+  Serial.println( message );
 }
 
 void COM::handleConnecting(bool startUp){
   //If the server isn't connected OR its startup we'll check if the time is right,
   //Then try to connect. If we do connect, we'll write this cycle. If we don't connect
   //We'll dis arm the bomb... i mean disconnect, and flush the server.
-  unsigned long thisTime = millis();
-  log("We're Checking If Connected");
-  if (!beemoServer.connected() || startUp){
-    log("Server... Not Connected... Checking Conditions",true);
-    if(((thisTime - old_time) >= retryConnectTime) || startUp){
-      log("Trying To Connect To Beemo Server",true);
-      beemoServer.connect(serverIP,BEEMO_PORT);
-      if (beemoServer.connected()){
-        log("Beemo Server Now Connected...",true);
-      }
-      if (!beemoServer.connected())
-      { //Flush Server... Kill Client to open a socket
-         log("disconnecting.",true);
-         beemoServer.flush();
-         beemoServer.stop();
-      }
-    }
-  }
 }
 
 void COM::handleNetworking(){
-  //Client Connection
-  if (beemoServer.connected()) {
-    // echo all available bytes back to the client
-    //Check If Client Connected
-    if (beemoServer.available()){
-      String thisCom;
-      thisCom.reserve(256);
-      thisCom = "";
-      int count = 0;
-
-      //Read Data While Available
-      while (beemoServer.available()) {
-        input = beemoServer.read();
-        thisCom += input;
-        if (input.length()) count++;
-        //Attempt to prevent this com overflow
-        if (count > 100){
-          break;
-        }
-      }
-    }
-  }
-  if (!beemoServer.connected()){
-    log("Not Connected.... Flushing");
-    beemoServer.flush();
-  }
 }
 
 
