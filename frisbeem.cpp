@@ -21,17 +21,22 @@ void Frisbeem::initlaize(){
 }
 
 void Frisbeem::update(){
+  //Open COM to end client if conditions are correct
+  _com.open();
   //Tick The Log So It Can Output Periodically
   _com.tick();
+
+  _com.log("Beeming Into Space...");
+  //Update COM layer
+  _com.update();
+
 
   //Handle Other Stuff
   _com.log("Updating...");
   //Update MPU
   _com.log("Updating MPU");
   _mpu.update();
-  //Update COM layer
-  _com.log("Beeming Into Space...");
-  _com.update();
+
   //create newEvent and process events (circular buffer)
   _com.log("Generating Events");
   processEvents();
@@ -46,6 +51,9 @@ void Frisbeem::update(){
   _com.log("Puttin On The High Beems!");
   updateThetaOffset();
   _lights.update();
+
+  //Close COM to end client
+  _com.close();
 }
 
 void Frisbeem::updateThetaOffset()

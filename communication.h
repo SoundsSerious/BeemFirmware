@@ -17,11 +17,11 @@ public:
   IPAddress serverIP;
 
   //Event Timing
-  unsigned long retryConnectTime=60000;
   unsigned long old_time;
-  uint8_t retry_count;
-  uint8_t retry_limit = 10;
-  int tickCount = 200;
+  //uint8_t retry_count;
+  //uint8_t retry_limit = 10;
+  unsigned long read_timeout = 2;
+  int tickCount = 10;
   int _tick = tickCount + 1; //Tick Greater than tickCount will print first time
 
   //MDNS
@@ -38,17 +38,19 @@ public:
   bool writeNow = true; //Tells log to write
   bool superDebugMode = true; //Write All The Things
   bool alwaysSerial = true;
+  bool initialConnection = false;
 
-  //Important Messages
+  //Important Functions
   void log(String message,bool force=false);
   void initialize();
   void update();
+  void open();
+  void close();
+  void read();
 
   void tick();
   void initialize_cloud();
   int initialize_could_offset(String commandName, int message);
-  void handleConnecting(bool startUp=false);
-  void handleNetworking();
   void initialize_mdns();
   void initialize_server();
   void serial_RealWorldData();

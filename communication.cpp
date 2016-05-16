@@ -5,7 +5,7 @@ void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
   delay(300);
 
-  //while(!Serial.available()){ Particle.process();};
+  while(!Serial.available()){ Particle.process();};
 
   log("Initlaize:");
   log(WiFi.localIP());
@@ -56,34 +56,46 @@ void COM::tick(){
 }
 
 void COM::update(){
-  log("Handle Zee Connecting");
+  log("Sending MDNS Information");
   mdns.processQueries();
+}
 
-  TCPClient client = server.available();
-
+void COM::open(){
+  initialConnection = false; //Reset This Flag
+  log("Opening COM Server");
+  client = server.available();
   if (client){
-    while (client.read() != -1);
+    log("Connected To Client");
+    initialConnection = true;
+    read();
+  }
+}
 
-    client.write(serverMessage);
-    client.flush();
-    delay(5);
+void COM::close(){
+  if ( initialConnection ){
+    //client.flush();
+    log("Closing");
     client.stop();
   }
+}
+
+void COM::read(){
+  String message;
+  unsigned long lastdata = millis();
+  while ( client.available() || (millis()-lastdata < read_timeout)) {
+    message += String(client.read());
+  }//while ( client.available() || (millis()-lastdata < timeout))
+  client.read();
+  log("Got "+message);
 }
 
 void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
   Serial.println( message );
-}
-
-void COM::handleConnecting(bool startUp){
-  //If the server isn't connected OR its startup we'll check if the time is right,
-  //Then try to connect. If we do connect, we'll write this cycle. If we don't connect
-  //We'll dis arm the bomb... i mean disconnect, and flush the server.
-}
-
-void COM::handleNetworking(){
+  if (initialConnection){
+    server.println( message );
+  }
 }
 
 
