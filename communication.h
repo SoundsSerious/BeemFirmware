@@ -21,7 +21,7 @@ public:
   //uint8_t retry_count;
   //uint8_t retry_limit = 10;
   unsigned long read_timeout = 2;
-  int tickCount = 10;
+  int tickCount = 100;
   int _tick = tickCount + 1; //Tick Greater than tickCount will print first time
 
   //MDNS

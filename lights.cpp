@@ -16,16 +16,14 @@ void Lights::update(uint8_t wait)
 {
   if (frisbeem._motionState.stateNow() -> sleepModeActivated){
     off();
+    refresh();
     delay(250);
   }
   else{
     rainbow(frisbeem.lightOffset );
     refresh();
+    delay(wait);
   }
-  off();
-
-  delay(wait);
-  refresh();
 }
 
 void Lights::refresh(){
