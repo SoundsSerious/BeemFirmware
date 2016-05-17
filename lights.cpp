@@ -7,21 +7,33 @@ void Lights::initlaize()
   //Loading Effect :)
   off();
   _strip.show();
-  colorWipe( wheel( 255 ), 20);
+  colorWipe( wheel( 255 ),20);
   _strip.show();
   delay(100);
 }
 
-void Lights::update()
+void Lights::update(uint8_t wait)
 {
   if (frisbeem._motionState.stateNow() -> sleepModeActivated){
     off();
     delay(250);
   }
   else{
-    rainbow( 10, frisbeem.lightOffset );
+    rainbow(frisbeem.lightOffset );
+    refresh();
   }
   off();
+
+  delay(wait);
+  refresh();
+}
+
+void Lights::refresh(){
+  ATOMIC_BLOCK() {
+   // We block so that the light timing doesn't get messed up... ya know...
+   //technically speaking
+   _strip.show();
+  }
 }
 
 void Lights::onNotify( Event &event)
@@ -29,7 +41,7 @@ void Lights::onNotify( Event &event)
 };
 
 // Cool and useful color functions
-void Lights::rainbow(uint8_t wait,uint8_t offset) {
+void Lights::rainbow(uint8_t offset) {
   uint16_t i;
   int current;
   int numPixels = _strip.numPixels();
@@ -47,9 +59,6 @@ void Lights::rainbow(uint8_t wait,uint8_t offset) {
     }
   }
   whl++;
-  _strip.show();
-  delay(wait);
-
 }
 
 void Lights::quarters(uint32_t c,uint32_t c2, uint8_t offset)
@@ -81,22 +90,20 @@ void Lights::quarters(uint32_t c,uint32_t c2, uint8_t offset)
 }
 
 // Set all pixels in the strip to a solid color, then wait (ms)
-void Lights::colorAll(uint32_t c, uint8_t wait) {
+void Lights::colorAll(uint32_t c) {
   uint16_t i;
 
   for(i=0; i<_strip.numPixels(); i++) {
     _strip.setPixelColor(i, c);
   }
-  _strip.show();
-  delay(wait);
 }
 
 // Fill the dots one after the other with a color, wait (ms) after each one
 void Lights::colorWipe(uint32_t c, uint8_t wait) {
   for(uint16_t i=0; i<_strip.numPixels(); i++) {
     _strip.setPixelColor(i, c);
-    _strip.show();
     delay(wait);
+    _strip.show();
   }
 }
 
@@ -122,7 +129,6 @@ void Lights::blue() {
   for(i=0; i<_strip.numPixels(); i++) {
       _strip.setPixelColor(i, wheel(255));
   }
-  _strip.show();
 }
 
 void Lights::green() {
@@ -131,7 +137,6 @@ void Lights::green() {
   for(i=0; i<_strip.numPixels(); i++) {
       _strip.setPixelColor(i, wheel(60));
   }
-  _strip.show();
 }
 
 void Lights::red() {
@@ -140,7 +145,6 @@ void Lights::red() {
   for(i=0; i<_strip.numPixels(); i++) {
       _strip.setPixelColor(i, wheel(180));
   }
-  _strip.show();
 }
 void Lights::off() {
   uint16_t i, j;
@@ -148,5 +152,4 @@ void Lights::off() {
   for(i=0; i<_strip.numPixels(); i++) {
       _strip.setPixelColor(i, _strip.Color(0,0,0));
   }
-  _strip.show();
 }

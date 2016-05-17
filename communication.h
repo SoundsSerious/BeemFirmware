@@ -36,8 +36,6 @@ public:
   String input;
   bool debugMode = true;
   bool writeNow = true; //Tells log to write
-  bool superDebugMode = true; //Write All The Things
-  bool alwaysSerial = true;
   bool initialConnection = false;
 
   //Important Functions

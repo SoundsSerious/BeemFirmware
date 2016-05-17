@@ -63,7 +63,10 @@ void COM::update(){
 void COM::open(){
   initialConnection = false; //Reset This Flag
   log("Opening COM Server");
-  client = server.available();
+  if ( !client.connected() ){
+    client = server.available();
+  }
+
   if (client){
     log("Connected To Client");
     initialConnection = true;
@@ -75,7 +78,7 @@ void COM::close(){
   if ( initialConnection ){
     //client.flush();
     log("Closing");
-    client.stop();
+    //client.stop();
   }
 }
 
@@ -92,9 +95,11 @@ void COM::read(){
 void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
-  Serial.println( message );
-  if (initialConnection){
-    server.println( message );
+  if ( writeNow || force){
+    Serial.println( message );
+    if (initialConnection){
+      server.println( message );
+    }
   }
 }
 

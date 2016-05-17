@@ -50,7 +50,7 @@ void Frisbeem::update(){
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
   updateThetaOffset();
-  _lights.update();
+  _lights.update(1);
 
   //Close COM to end client
   _com.close();

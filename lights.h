@@ -18,13 +18,14 @@ public:
   uint8_t whl;
 
   //Important Funcitons
-  virtual void update();
+  virtual void update(uint8_t wait);
   virtual void initlaize();
   virtual void onNotify( Event &event);
+  void refresh();
 
   //Color Functions
-  void rainbow( uint8_t wait, uint8_t offset);
-  void colorAll(uint32_t c, uint8_t wait);
+  void rainbow( uint8_t offset);
+  void colorAll(uint32_t c);
   void colorWipe(uint32_t c, uint8_t wait);
   void quarters(uint32_t c,uint32_t c2, uint8_t offset);
 
