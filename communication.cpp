@@ -5,7 +5,7 @@ void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
   delay(300);
 
-  while(!Serial.available()){ Particle.process();};
+  //while(!Serial.available()){ Particle.process();};
 
   log("Initlaize:");
   log(WiFi.localIP());
@@ -86,7 +86,8 @@ void COM::read(){
   String message;
   unsigned long lastdata = millis();
   while ( client.available() || (millis()-lastdata < read_timeout)) {
-    message += String(client.read());
+    char out = client.read();
+      message += String( out );
   }//while ( client.available() || (millis()-lastdata < timeout))
   client.read();
   log("Got "+message);
@@ -101,6 +102,11 @@ void COM::log(String message, bool force){
       server.println( message );
     }
   }
+}
+
+void COM::telemetry(String message){
+  //Send telemetry every opprotunity
+  server.println( "TEL:\t"+ message );
 }
 
 

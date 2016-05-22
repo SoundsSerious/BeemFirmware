@@ -40,6 +40,7 @@ public:
 
   //Important Functions
   void log(String message,bool force=false);
+  void telemetry(String message);
   void initialize();
   void update();
   void open();

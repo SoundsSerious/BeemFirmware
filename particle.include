@@ -20,6 +20,7 @@ Buffer.cpp
 communication.cpp
 dotstar.cpp
 entity.cpp
+event.cpp
 frisbeem.cpp
 Label.cpp
 lights.cpp

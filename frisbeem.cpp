@@ -39,14 +39,14 @@ void Frisbeem::update(){
 
   //create newEvent and process events (circular buffer)
   _com.log("Generating Events");
-  processEvents();
+  processMotion();
   //Notify Observers Of new Event
   _com.log("Hollerin'");
-  notify( newEvent );
+  notify( currentMotionEvent );
   //Send Event To Current Motion State
   //Serial.println("Calling handleInput");
   _com.log("Making Decisions");
-  _motionState.handleInput( newEvent );
+  _motionState.handleInput( currentMotionEvent );
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
   updateThetaOffset();
@@ -76,36 +76,14 @@ void Frisbeem::updateThetaOffset()
   lastTime = thisTime;
 }
 
-void Frisbeem::processEvents()
+void Frisbeem::processMotion()
 { //Generate A New Event & Add to circular buffer after deleting current item
   //Serial.print("Getting New Event #");Serial.println(_eventCount);
-  newEvent = genNextEvent();
-  _eventCount++;
-  //Delete Current Item & Add To Buffer
-  // delete getCurrentEvent();
-  // setCurrentEvent( &newEvent);
-  // Serial.println("Added New Event To Queue");
-  // //Move Tail Index And
-  // _currentEventIndex++;
-  // if (_currentEventIndex >= NUM_EVENTS - 1)
-  // { Serial.println("Resetting Queue Index");
-  //   _currentEventIndex = 0;
-  // }
+  currentMotionEvent = genNextEvent();
 
 }
 
-Event Frisbeem::genNextEvent()
+MotionEvent Frisbeem::genNextEvent()
 { //For Now Look At Omegea (w)
-  return Event( _mpu.G.z );
-}
-
-
-Event *Frisbeem::getCurrentEvent()
-{
-  return _events[ _currentEventIndex ];
-}
-
-void Frisbeem::setCurrentEvent(Event *event)
-{
-  _events[ _currentEventIndex ] = event;
+  return MotionEvent( _mpu.G.z );
 }
