@@ -1,8 +1,8 @@
 #import "application.h"
+#import "event.h"
 #undef min
 #undef max
 #include <vector>
-#import "event.h"
 #import "entity.h"
 
 using namespace std;
@@ -18,7 +18,12 @@ public:
   //Object That Has State
   Entity *_entity;
 
-  virtual int handleInput( Event &event ) = 0;
+  //Override handleInput for visitor pattern
+  virtual void handleInput( Event &event ) = 0;
+  //virtual void handleInput( MotionEvent &event ) = 0;
+  //virtual void handleInput( COMEvent &event ) = 0;
+
+  //Other Important Functions
   virtual void update(){};
   virtual void enter(){};
   virtual void leave(){};
@@ -61,7 +66,7 @@ enum MotionStates {
 
   String msg = "motionState";
 
-  virtual int handleInput( Event &event);
+  virtual void handleInput( Event &event);
 };
 
 
@@ -73,10 +78,9 @@ public:
   std::vector<MotionState*>  _states;
   //Important Funcitons
   virtual void initialize();
-  virtual int handleInput( Event &event)
+  virtual void handleInput( Event &event)
   { //Serial.println("Switch Handiling Input");
     stateNow() -> handleInput( event );
-    return 0;
   }
 
   MotionState* stateNow()

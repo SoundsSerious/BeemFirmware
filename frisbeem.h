@@ -1,4 +1,5 @@
 #include "application.h"
+#include "event.h"
 #include "mpu9250.h"
 #include "lights.h"
 #include "communication.h"
@@ -38,7 +39,7 @@ public:
   //Event Functions
   MotionEvent genNextEvent();
   void processMotion();
-  
+
   //Important Entity Functions
   virtual void initlaize();
   virtual void update();
