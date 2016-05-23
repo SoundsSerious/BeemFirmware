@@ -34,10 +34,6 @@ void Lights::refresh(){
   }
 }
 
-void Lights::onNotify( Event &event)
-{
-};
-
 // Cool and useful color functions
 void Lights::rainbow(uint8_t offset) {
   uint16_t i;

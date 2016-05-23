@@ -1,5 +1,4 @@
 #import "subject.h"
-#import "observer.h"
 
 void Subject::addObserver(Observer  &observer)
 {

@@ -1,25 +1,28 @@
 #import "application.h"
-#import "event.h"
 #undef min
 #undef max
 #include <vector>
-#import "entity.h"
 
 using namespace std;
 
+class Event;
+
 #define MAX_STATES 50 //'Murica
 //float MOI = 0.008748; //Frisbeem Moment Of Inertia
-
-class State //In which we derive our actions
+class IState
 {
 public:
-  virtual ~State() {};
-
-  //Object That Has State
-  Entity *_entity;
-
-  //Override handleInput for visitor pattern
   virtual void handleInput( Event &event ) = 0;
+};
+
+
+class State: public IState //In which we derive our actions
+{
+public:
+  State() {};
+  virtual ~State() {};
+  //Override handleInput for visitor pattern
+  virtual void handleInput( Event &event ) {};
   //virtual void handleInput( MotionEvent &event ) = 0;
   //virtual void handleInput( COMEvent &event ) = 0;
 
@@ -57,10 +60,10 @@ public:
   bool moving = true;
   bool sleepModeActivated = false;
 
-enum MotionStates {
-  STATIONARY,
-  AIRBORNE,
-};
+  enum MotionStates {
+    STATIONARY,
+    AIRBORNE,
+  };
 
   int currentState;
 

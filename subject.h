@@ -1,10 +1,16 @@
 #import "application.h"
 #import "observer.h"
-#import "entity.h"
-#import "event.h"
+
 #define MAX_OBSERVERS 20
 
-class Subject //In which we send notifications
+class Event;
+
+class ISubject
+{
+  virtual void notify( Event &event) = 0;
+};
+
+class Subject: public ISubject //In which we send notifications
 {
 public:
   ~Subject(){};
@@ -14,5 +20,5 @@ public:
   int numObservers_;
   void addObserver(Observer &observer);
   void removeObserver(Observer &observer);
-  virtual void notify( Event &event) ;
+  virtual void notify( Event &event);
 };

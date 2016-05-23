@@ -1,5 +1,4 @@
 #include "application.h"
-//#include "event.h"
 #include "mpu9250.h"
 #include "lights.h"
 #include "communication.h"
@@ -35,7 +34,7 @@ public:
   COM _com;
 
   //Events
-  MotionEvent currentMotionEvent = MotionEvent(0);
+  MotionEvent currentMotionEvent = MotionEvent(0.0);
   //Event Functions
   MotionEvent genNextEvent();
   void processMotion();

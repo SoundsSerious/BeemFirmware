@@ -1,11 +1,10 @@
 #import "application.h"
-#import "observer.h"
 #import "dotstar.h"
 
 #define DOTSTAR_GRB (1 | (0 << 2) | (2 << 4))
 #define NUM_LED 50
 
-class Lights: public Observer
+class Lights
 { //In Which We Light The World
 public:
   Lights(): _strip( NUM_LED ){_strip.brightness = brightness;};
@@ -20,7 +19,6 @@ public:
   //Important Funcitons
   virtual void update(uint8_t wait);
   virtual void initlaize();
-  virtual void onNotify( Event &event);
   void refresh();
 
   //Color Functions
