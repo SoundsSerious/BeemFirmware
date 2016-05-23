@@ -14,5 +14,5 @@ public:
   int numObservers_;
   void addObserver(Observer &observer);
   void removeObserver(Observer &observer);
-  virtual void notify( Event &event) = 0;
+  virtual void notify( Event &event) ;
 };

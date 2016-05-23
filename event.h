@@ -12,10 +12,11 @@ class Event{
 public:
   Event(){};
   ~Event() {};
+  float data;
   //Should Return The Type Of Event
-  //virtual void visit(State &s) { s.handleInput(*this); }; //State
-  //virtual void visit(Subject &sj) { sj.notify(this); }; //Subject
-  //virtual void visit(Observer &o) { o.onNotify(this); }; //Observer
+  //virtual void visit(State &s) =0;//{ s.handleInput(*this); }; //State
+  //virtual void visit(Subject &sj) =0;//{ sj.notify(this); }; //Subject
+  //virtual void visit(Observer &o) =0;//{ o.onNotify(this); }; //Observer
 };
 
 class MotionEvent: public Event {
