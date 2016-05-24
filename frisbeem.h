@@ -34,7 +34,7 @@ public:
   COM _com;
 
   //Events
-  MotionEvent currentMotionEvent = MotionEvent(0.0);
+  MotionEvent currentMotionEvent;
   //Event Functions
   MotionEvent genNextEvent();
   void processMotion();

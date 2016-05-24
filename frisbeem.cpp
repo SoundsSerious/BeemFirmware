@@ -42,11 +42,10 @@ void Frisbeem::update(){
   processMotion();
   //Notify Observers Of new Event
   _com.log("Hollerin'");
-  notify( currentMotionEvent );
   //Send Event To Current Motion State
   //Serial.println("Calling handleInput");
   _com.log("Making Decisions");
-  _motionState.handleInput( currentMotionEvent );
+  //_motionState.handleInput( currentMotionEvent );
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
   updateThetaOffset();
@@ -80,6 +79,9 @@ void Frisbeem::processMotion()
 { //Generate A New Event & Add to circular buffer after deleting current item
   //Serial.print("Getting New Event #");Serial.println(_eventCount);
   currentMotionEvent = genNextEvent();
+  currentMotionEvent.visit( this );//Subject Call notify()
+  currentMotionEvent.visit( _motionState);//StateSwitchCall
+  currentMotionEvent.visit( _powerState);//StateSwitchCall
 
 }
 
