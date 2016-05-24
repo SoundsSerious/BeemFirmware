@@ -6,16 +6,16 @@
 
 class IEvent
 {
-  virtual void visit(State &s) =0;
+  virtual void visit(State *s) =0;
 };
 
 class Event: public IEvent{
 public:
   Event(){};
   ~Event() {};
-  float data;
+  String msg;
   //Should Return The Type Of Event
-  virtual void visit(State &s) { s.handleInput(*this); }; //State
+  virtual void visit(State *s) { s -> handleInput(*this); }; //State
   //virtual void visit(Subject &sj) =0;//{ sj.notify(this); }; //Subject
   //virtual void visit(Observer &o) =0;//{ o.onNotify(this); }; //Observer
 };

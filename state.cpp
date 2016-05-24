@@ -8,11 +8,15 @@ void StateSwitch::initialize(){
   frisbeem._com.log(String("Last Item") + String(_states.back() -> msg ));
 }
 
-void MotionState::handleInput(Event &event)
+void StateSwitch::handleInput( Event &event)
+{ //Serial.println("Switch Handiling Input");
+  event.visit( stateNow() );
+}
+
+void MotionState::handleInput(MotionEvent &event)
   { //Initialize and do some physics math
-     //if( strcmp(event.type(),"MotionEvent") == 0 ){
       now = micros();
-      newOmega = event.data;//();
+      newOmega = event.abs_omega;//();
       dOmega = newOmega - lastOmega;
       dt = (now - lastTime);
       dOmegaDt = dOmega *1E6/ dt;
@@ -68,5 +72,4 @@ void MotionState::handleInput(Event &event)
       //Setup For Next Update
       lastTime = now;
       lastOmega = newOmega;
-    //} event.type() == "MotionState"
   }

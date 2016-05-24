@@ -2,17 +2,17 @@
 #undef min
 #undef max
 #include <vector>
-
 using namespace std;
 
 class Event;
-
+class MotionEvent;
 #define MAX_STATES 50 //'Murica
 //float MOI = 0.008748; //Frisbeem Moment Of Inertia
 class IState
 {
 public:
   virtual void handleInput( Event &event ) = 0;
+  virtual void handleInput( MotionEvent &event ) = 0;
 };
 
 
@@ -21,9 +21,13 @@ class State: public IState //In which we derive our actions
 public:
   State() {};
   virtual ~State() {};
+
+  bool sleepModeActivated = false;
+  bool moving = true;
+  
   //Override handleInput for visitor pattern
-  virtual void handleInput( Event &event ) {};
-  //virtual void handleInput( MotionEvent &event ) = 0;
+  virtual void handleInput( Event &event ) { };
+  virtual void handleInput( MotionEvent &event ) { };
   //virtual void handleInput( COMEvent &event ) = 0;
 
   //Other Important Functions
@@ -57,9 +61,6 @@ public:
   unsigned long stationaryReset = -10;
   unsigned long sleepThreshold = 50000;
 
-  bool moving = true;
-  bool sleepModeActivated = false;
-
   enum MotionStates {
     STATIONARY,
     AIRBORNE,
@@ -69,7 +70,7 @@ public:
 
   String msg = "motionState";
 
-  virtual void handleInput( Event &event);
+  virtual void handleInput( MotionEvent &event);
 };
 
 
@@ -78,27 +79,24 @@ class StateSwitch: public State
   //Class that passes argument to current state
 public:
   int currentState = 0;
-  std::vector<MotionState*>  _states;
+  std::vector<State*>  _states;
   //Important Funcitons
   virtual void initialize();
-  virtual void handleInput( Event &event)
-  { //Serial.println("Switch Handiling Input");
-    stateNow() -> handleInput( event );
-  }
+  virtual void handleInput( Event &event);
 
-  MotionState* stateNow()
+  State* stateNow()
   {
     return _states.back();
-  }
+  };
   //Not Implemented Yet
   virtual void update() {
     _states[ currentState ] -> update();
-  }
+  };
   virtual void enter() {
     _states[ currentState ] -> enter();
-  }
+  };
   virtual void leave() {
     _states[ currentState ] -> leave();
-  }
+  };
 
 };
