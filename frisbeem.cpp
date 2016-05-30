@@ -30,7 +30,6 @@ void Frisbeem::update(){
   //Update COM layer
   _com.update();
 
-
   //Handle Other Stuff
   _com.log("Updating...");
   //Update MPU

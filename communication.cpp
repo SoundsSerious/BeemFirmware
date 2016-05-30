@@ -1,5 +1,5 @@
 #include "communication.h"
-
+//#include "globals.h"
 
 void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
@@ -58,12 +58,14 @@ void COM::tick(){
 void COM::update(){
   log("Sending MDNS Information");
   mdns.processQueries();
+  read();
 }
 
 void COM::open(){
   initialConnection = false; //Reset This Flag
   log("Opening COM Server");
   if ( !client.connected() ){
+    log("Checking Server For Client");
     client = server.available();
   }
   else{ log("Client Connected");}
@@ -71,10 +73,8 @@ void COM::open(){
   if (client){
     log("Connected To Client");
     initialConnection = true;
-    read();
   }
   else{ log("No Client :(");}
-
 }
 
 void COM::close(){
@@ -87,12 +87,12 @@ void COM::close(){
 
 void COM::read(){
   String message;
-  unsigned long lastdata = millis();
-  while ( client.available() || (millis()-lastdata < read_timeout)) {
+  log("Checking For Input");
+  log(String(client.available())+" In Client Buffer");
+  while ( client.available()) {
     char out = client.read();
-      message += String( out );
-  }//while ( client.available() || (millis()-lastdata < timeout))
-  client.read();
+    message += String( out );
+  }
   log("Got "+message);
 }
 
@@ -100,12 +100,14 @@ void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
   if ( writeNow || force){
-    Serial.println( message );
+    Serial.println( "LOG:\t"+message );
     if (initialConnection){
-      server.println( message );
+      server.println( "LOG:\t"+message );
     }
   }
-  delay(3);
+  #ifdef LOG_DEBUG
+    delay(10);
+  #endif
 }
 
 void COM::telemetry(String message){
@@ -113,8 +115,8 @@ void COM::telemetry(String message){
   server.println( "TEL:\t"+ message );
 }
 
-
-/*void COM::serial_RealWorldData(){
+/*
+void COM::serial_RealWorldData(){
   //Output Data On Serial
   Serial.print("GYR:\t");
   Serial.print( String(G.x,DEC));Serial.print("||\t");
@@ -146,12 +148,12 @@ void COM::serial_sendTelemetry(){
 
 void COM::com_sendTelemetry(){
   //Send All Types O' Data
-  com_sendDmpAcl();
-  com_sendRealAcl();
-  com_sendWorldAcl();
-  com_sendGyro();
-  com_sendGravity();
-  com_sendMag();
+  //com_sendDmpAcl();
+  //com_sendRealAcl();
+  //com_sendWorldAcl();
+  //com_sendGyro();
+  //com_sendGravity();
+  //com_sendMag();
   //com_sendRawAcl();
   //com_sendRawGy();
 }
@@ -266,7 +268,7 @@ void COM::com_sendGravity(){
   server.write("\n");
 }
 
-void COM::initialize_cloud(){
+/*void COM::initialize_cloud(){
   //Initialize_offset variables
   initialize_could_offset("ax_offset", ax_offset);
   initialize_could_offset("ay_offset", ay_offset);
@@ -284,4 +286,5 @@ int COM::initialize_could_offset(String commandName, int message){
   }
   could_offsets_registered = true;
 
-}*/
+}
+*/

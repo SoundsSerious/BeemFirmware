@@ -5,6 +5,7 @@
 
 #define MAX_CLIENTS 4
 #define BEEMO_PORT 18330
+#define LOG_DEBUG false //5ms log delay
 
 class COM { //, public Subject{
   //In which we send information
@@ -18,10 +19,7 @@ public:
 
   //Event Timing
   unsigned long old_time;
-  //uint8_t retry_count;
-  //uint8_t retry_limit = 10;
-  unsigned long read_timeout = 2;
-  int tickCount = 100;
+  int tickCount = 1;
   int _tick = tickCount - 1; //Tick One Less than tickCount will print first time
 
   //MDNS
