@@ -19,7 +19,7 @@ public:
 
   //Event Timing
   unsigned long old_time;
-  int tickCount = 1;
+  int tickCount = 50;
   int _tick = tickCount - 1; //Tick One Less than tickCount will print first time
 
   //MDNS
@@ -38,7 +38,7 @@ public:
 
   //Important Functions
   void log(String message,bool force=false);
-  void telemetry(String message);
+  void telemetry(String pck, String message);
   void initialize();
   void update();
   void open();
@@ -50,8 +50,8 @@ public:
   int initialize_could_offset(String commandName, int message);
   void initialize_mdns();
   void initialize_server();
-  void serial_RealWorldData();
-  void serial_RawAclGyrVals();
+  void send_acl();
+  void send_gyro();
   void serial_sendTelemetry();
   void com_sendTelemetry();
   void com_sendRawAcl();

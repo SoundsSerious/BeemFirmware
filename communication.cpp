@@ -1,5 +1,5 @@
-#include "communication.h"
-//#include "globals.h"
+#import "communication.h"
+#import "globals.h"
 
 void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
@@ -59,6 +59,8 @@ void COM::update(){
   log("Sending MDNS Information");
   mdns.processQueries();
   read();
+  send_acl();
+  send_gyro();
 }
 
 void COM::open(){
@@ -105,186 +107,29 @@ void COM::log(String message, bool force){
       server.println( "LOG:\t"+message );
     }
   }
-  #ifdef LOG_DEBUG
+  /*#ifdef LOG_DEBUG
+    log("debug delay");
     delay(10);
-  #endif
+  #endif*/
 }
 
-void COM::telemetry(String message){
-  //Send telemetry every opprotunity
-  server.println( "TEL:\t"+ message );
-}
-
-/*
-void COM::serial_RealWorldData(){
-  //Output Data On Serial
-  Serial.print("GYR:\t");
-  Serial.print( String(G.x,DEC));Serial.print("||\t");
-  Serial.print( String(G.y,DEC));Serial.print("||\t");
-  Serial.print( String(G.z,DEC));
-  Serial.print("\tACL:\t");
-  Serial.print( String(aa.x,DEC));Serial.print("||\t");
-  Serial.print( String(aa.y,DEC));Serial.print("||\t");
-  Serial.println(String(aa.z,DEC));
-}
-
-void COM::serial_RawAclGyrVals(){
-
-  Serial.print("a/g:\t");
-  Serial.print(ax); Serial.print("\t");
-  Serial.print(ay); Serial.print("\t");
-  Serial.print(az); Serial.print("\t");
-  Serial.print(gx); Serial.print("\t");
-  Serial.print(gy); Serial.print("\t");
-  Serial.print(gz); Serial.print("\t");
-  Serial.println(packetSize);
-
-}
-
-void COM::serial_sendTelemetry(){
-  //serial_RawAclGyrVals();
-  serial_RealWorldData();
-}
-
-void COM::com_sendTelemetry(){
-  //Send All Types O' Data
-  //com_sendDmpAcl();
-  //com_sendRealAcl();
-  //com_sendWorldAcl();
-  //com_sendGyro();
-  //com_sendGravity();
-  //com_sendMag();
-  //com_sendRawAcl();
-  //com_sendRawGy();
-}
-
-void COM::com_sendRawAcl(){
-
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,RACL:\t");
-  server.write(String(ax,DEC));
-  server.write("\t");
-  server.write(String(ay,DEC));
-  server.write("\t");
-  server.write(String(az,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendRawGy(){
-
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,RGY:\t");
-  server.write(String(gx,DEC));
-  server.write("\t");
-  server.write(String(gy,DEC));
-  server.write("\t");
-  server.write(String(gz,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendDmpAcl(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,ACL:\t");
-  server.write(String(aa.x,DEC));
-  server.write("\t");
-  server.write(String(aa.y,DEC));
-  server.write("\t");
-  server.write(String(aa.z,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendRealAcl(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,REAL:\t");
-  server.write(String(aaReal.x,DEC));
-  server.write("\t");
-  server.write(String(aaReal.y,DEC));
-  server.write("\t");
-  server.write(String(aaReal.z,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendWorldAcl(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,WORLD:\t");
-  server.write(String(aaWorld.x,DEC));
-  server.write("\t");
-  server.write(String(aaWorld.y,DEC));
-  server.write("\t");
-  server.write(String(aaWorld.z,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendGyro(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,GY:\t");
-  server.write(String(G.x,DEC));
-  server.write("\t");
-  server.write(String(G.y,DEC));
-  server.write("\t");
-  server.write(String(G.z,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendMag(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,MAG:\t");
-  server.write(String(M.x,DEC));
-  server.write("\t");
-  server.write(String(M.y,DEC));
-  server.write("\t");
-  server.write(String(M.z,DEC));
-  server.write("\n");
-}
-
-void COM::com_sendEuler(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,EUL:\t");
-  server.write(String(euler[0],DEC));
-  server.write("\t");
-  server.write(String(euler[1],DEC));
-  server.write("\t");
-  server.write(String(euler[2],DEC));
-  server.write("\n");
-}
-
-void COM::com_sendGravity(){
-  server.write("TIME:\t");
-  server.write(String(now,DEC));
-  server.write("\t,GRAV:\t");
-  server.write(String(gravity.x,DEC));
-  server.write("\t");
-  server.write(String(gravity.y,DEC));
-  server.write("\t");
-  server.write(String(gravity.z,DEC));
-  server.write("\n");
-}
-
-/*void COM::initialize_cloud(){
-  //Initialize_offset variables
-  initialize_could_offset("ax_offset", ax_offset);
-  initialize_could_offset("ay_offset", ay_offset);
-  initialize_could_offset("az_offset", az_offset);
-  initialize_could_offset("gx_offset", gx_offset);
-  initialize_could_offset("gy_offset", gy_offset);
-  initialize_could_offset("gz_offset", gz_offset);
-}
-
-int COM::initialize_could_offset(String commandName, int message){
-
-    if (Particle.variable(commandName, message)==false)
-  {
-      could_offsets_registered = false;
+void COM::telemetry(String pck, String message){
+  //Send telemetry every opprotunity only on wifi
+  if ( initialConnection ){
+    server.println( "TEL:\t"+pck+":\t"+ message );
   }
-  could_offsets_registered = true;
-
 }
-*/
+
+
+void COM::send_gyro(){
+  //Send Gyro Values
+  telemetry("GYR",  String(frisbeem._mpu.G.x,DEC)+","+
+                    String(frisbeem._mpu.G.y,DEC)+","+
+                    String(frisbeem._mpu.G.z,DEC)+";");
+}
+void COM::send_acl(){
+  //Send ACL Values
+  telemetry("ACL",  String(frisbeem._mpu.A.x,DEC)+","+
+                    String(frisbeem._mpu.A.y,DEC)+","+
+                    String(frisbeem._mpu.A.z,DEC)+";");
+}
