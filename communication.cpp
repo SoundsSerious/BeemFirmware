@@ -5,7 +5,7 @@ void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
   delay(300);
 
-  //while(!Serial.available()){ Particle.process();};
+  while(!Serial.available()){ Particle.process();};
 
   log("Initlaize:");
   log(WiFi.localIP());
@@ -43,9 +43,9 @@ void COM::initialize_mdns(){
 
 void COM::tick(){
   _tick += 1;
+  log("tick...");
   if (_tick == tickCount){
     writeNow = true;
-    log("tick...");
   }
   else{
     writeNow = false;
@@ -66,12 +66,15 @@ void COM::open(){
   if ( !client.connected() ){
     client = server.available();
   }
+  else{ log("Client Connected");}
 
   if (client){
     log("Connected To Client");
     initialConnection = true;
     read();
   }
+  else{ log("No Client :(");}
+
 }
 
 void COM::close(){
@@ -102,6 +105,7 @@ void COM::log(String message, bool force){
       server.println( message );
     }
   }
+  delay(3);
 }
 
 void COM::telemetry(String message){

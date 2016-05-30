@@ -1,5 +1,5 @@
 #import "mpu9250.h"
-
+#import "globals.h"
 // Implementation of Sebastian Madgwick's "...efficient orientation filter for... inertial/magnetic sensor arrays"
 // (see http://www.x-io.co.uk/category/open-source/ for examples and more details)
 // which fuses acceleration, rotation rate, and magnetic moments to produce a quaternion-based estimate of absolute
@@ -198,7 +198,8 @@ void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, fl
 void MPU_9250::initialize()
 {
   Wire.begin();
-//  TWBR = 12;  // 400 kbit/sec I2C speed
+  //frisbeem..log("Initializing MPU");
+  //  TWBR = 12;  // 400 kbit/sec I2C speed
   // Set up the interrupt pin, its set as active high, push-pull
   pinMode(intPin, INPUT);
   digitalWrite(intPin, LOW);
@@ -209,46 +210,42 @@ void MPU_9250::initialize()
 
   // Read the WHO_AM_I register, this is a good test of communication
   byte c = readByte(MPU9250_ADDRESS, WHO_AM_I_MPU9250);  // Read WHO_AM_I register for MPU-9250
-  //frisbeem._com.log("MPU9250 "); //frisbeem._com.log("I AM "); //frisbeem._com.log(c, HEX); //frisbeem._com.log(" I should be "); //frisbeem._com.logln(0x71, HEX);
+  String message = "MPU9250 I AM 0x"+String(c,HEX)+" I should be 0x71";
+  //frisbeem..log( message );
   delay(100);
 
   if (c == 0x71) // WHO_AM_I should always be 0x68
   {
-    //frisbeem._com.logln("MPU9250 is online...");
+    //frisbeem..log("MPU9250 is online...");
 
     MPU9250SelfTest(SelfTest); // Start by performing self test and reporting values
-    //frisbeem._com.log("x-axis self test: acceleration trim within : "); //frisbeem._com.log(SelfTest[0],1); //frisbeem._com.logln("% of factory value");
-    //frisbeem._com.log("y-axis self test: acceleration trim within : "); //frisbeem._com.log(SelfTest[1],1); //frisbeem._com.logln("% of factory value");
-    //frisbeem._com.log("z-axis self test: acceleration trim within : "); //frisbeem._com.log(SelfTest[2],1); //frisbeem._com.logln("% of factory value");
-    //frisbeem._com.log("x-axis self test: gyration trim within : "); //frisbeem._com.log(SelfTest[3],1); //frisbeem._com.logln("% of factory value");
-    //frisbeem._com.log("y-axis self test: gyration trim within : "); //frisbeem._com.log(SelfTest[4],1); //frisbeem._com.logln("% of factory value");
-    //frisbeem._com.log("z-axis self test: gyration trim within : "); //frisbeem._com.log(SelfTest[5],1); //frisbeem._com.logln("% of factory value");
+    ////frisbeem..log("x-axis self test: acceleration trim within : "); ////frisbeem..log(SelfTest[0],1); ////frisbeem..log("% of factory value");
+    ////frisbeem..log("y-axis self test: acceleration trim within : "); ////frisbeem..log(SelfTest[1],1); ////frisbeem..log("% of factory value");
+    ////frisbeem..log("z-axis self test: acceleration trim within : "); ////frisbeem..log(SelfTest[2],1); ////frisbeem..log("% of factory value");
+    ////frisbeem..log("x-axis self test: gyration trim within : "); ////frisbeem..log(SelfTest[3],1); ////frisbeem..log("% of factory value");
+    ////frisbeem..log("y-axis self test: gyration trim within : "); ////frisbeem..log(SelfTest[4],1); ////frisbeem..log("% of factory value");
+    ////frisbeem..log("z-axis self test: gyration trim within : "); ////frisbeem..log(SelfTest[5],1); ////frisbeem..log("% of factory value");
 
     calibrateMPU9250(gyroBias, accelBias); // Calibrate gyro and accelerometers, load biases in bias registers
     delay(1000);
 
     initMPU9250();
-    //frisbeem._com.logln("MPU9250 initialized for active data mode...."); // Initialize device for active mode read of acclerometer, gyroscope, and temperature
+    //frisbeem..log("MPU9250 initialized for active data mode...."); // Initialize device for active mode read of acclerometer, gyroscope, and temperature
 
     // Read the WHO_AM_I register of the magnetometer, this is a good test of communication
     byte d = readByte(AK8963_ADDRESS, WHO_AM_I_AK8963);  // Read WHO_AM_I register for AK8963
-    ////frisbeem._com.log("AK8963 "); ////frisbeem._com.log("I AM "); ////frisbeem._com.log(d, HEX); ////frisbeem._com.log(" I should be "); ////frisbeem._com.logln(0x48, HEX);
     delay(1000);
 
     // Get magnetometer calibration from AK8963 ROM
-    initAK8963(magCalibration); ////frisbeem._com.logln("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
+    initAK8963(magCalibration);
+    //frisbeem..log("AK8963 initialized for active data mode...."); // Initialize device for active mode read of magnetometer
 
-    ////frisbeem._com.logln("Calibration values: ");
-    ////frisbeem._com.log("X-Axis sensitivity adjustment value "<<magCalibration[0], 2);
-    ////frisbeem._com.log("Y-Axis sensitivity adjustment value "<<magCalibration[1]<< 2);
-    ////frisbeem._com.log("Z-Axis sensitivity adjustment value "<<magCalibration[2]<< 2);
     delay(1000);
   }
   else
   {
-    ////frisbeem._com.log("Could not connect to MPU9250: 0x");
-    ////frisbeem._com.logln(c, HEX);
-    while(1) ; // Loop forever if communication doesn't happen
+    //frisbeem..log("Could not connect to MPU9250: 0x"+String(c, HEX));
+    //while(1) ; // Loop forever if communication doesn't happen
   }
 }
 
@@ -256,8 +253,10 @@ void MPU_9250::update()
 {
   // If intPin goes high, all data registers have new data
   if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
-    //frisbeem._com.logln("Interrupt"); // On interrupt, check if data ready interrupt
+    //frisbeem..log("Interrupt"); // On interrupt, check if data ready interrupt
+    //frisbeem..log("Reading ACL");
     readAccelData(accelCount);  // Read the x/y/z adc values
+    //frisbeem..log("Got ACL");
     getAres();
 
     // Now we'll calculate the accleration value into actual g's
@@ -265,16 +264,20 @@ void MPU_9250::update()
     A.y = (float)accelCount[1]*aRes; // - accelBias[1];
     A.z = (float)accelCount[2]*aRes; // - accelBias[2];
 
+    //frisbeem..log("Reading Gyro");
     readGyroData(gyroCount);  // Read the x/y/z adc values
     getGres();
+    //frisbeem..log("Got Gyro");
 
     // Calculate the gyro value into actual degrees per second
     G.x = (float)gyroCount[0]*gRes;  // get actual gyro value, this depends on scale being set
     G.y = (float)gyroCount[1]*gRes;
     G.z = (float)gyroCount[2]*gRes;
 
+    //frisbeem..log("Reading MAG");
     readMagData(magCount);  // Read the x/y/z adc values
     getMres();
+    //frisbeem..log("Got MAG");
     magbias[0] = 0;//+100.;  // User environmental x-axis correction in milliGauss, should be automatically calculated
     magbias[1] = 0;//+120.;  // User environmental x-axis correction in milliGauss
     magbias[2] = 0;//-200.;  // User environmental x-axis correction in milliGauss
@@ -286,7 +289,7 @@ void MPU_9250::update()
     M.z = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
   }
   else{
-    //frisbeem._com.logln(" No Interrupt ");
+    ////frisbeem..log(" No Interrupt ");
   }
 
   Now = micros();
@@ -304,6 +307,7 @@ void MPU_9250::update()
   // This is ok by aircraft orientation standards!
   // Pass gyro rate as rad/s
   //MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
+  ////frisbeem..log("Mahony");
   MahonyQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
 
 
@@ -449,14 +453,18 @@ void MPU_9250::readGyroData(int16_t * destination)
 
 void MPU_9250::readMagData(int16_t * destination)
 {
+  ////frisbeem..log("Mag Call..");
   uint8_t rawData[7];  // x/y/z gyro register data, ST2 register stored here, must read ST2 at end of data acquisition
   if(readByte(AK8963_ADDRESS, AK8963_ST1) & 0x01) { // wait for magnetometer data ready bit to be set
+  ////frisbeem..log("Mag Ready");
   readBytes(AK8963_ADDRESS, AK8963_XOUT_L, 7, &rawData[0]);  // Read the six raw data and ST2 registers sequentially into data array
+  ////frisbeem..log("Mag read 6 Bytes");
   uint8_t c = rawData[6]; // End data read by reading ST2 register
     if(!(c & 0x08)) { // Check if magnetic sensor overflow set, if not then report data
-    destination[0] = ((int16_t)rawData[1] << 8) | rawData[0] ;  // Turn the MSB and LSB into a signed 16-bit value
-    destination[1] = ((int16_t)rawData[3] << 8) | rawData[2] ;  // Data stored as little Endian
-    destination[2] = ((int16_t)rawData[5] << 8) | rawData[4] ;
+      ////frisbeem..log("Applying Mag Data");
+      destination[0] = ((int16_t)rawData[1] << 8) | rawData[0] ;  // Turn the MSB and LSB into a signed 16-bit value
+      destination[1] = ((int16_t)rawData[3] << 8) | rawData[2] ;  // Data stored as little Endian
+      destination[2] = ((int16_t)rawData[5] << 8) | rawData[4] ;
    }
   }
 }
@@ -801,16 +809,18 @@ uint8_t MPU_9250::readByte(uint8_t address, uint8_t subAddress)
   Wire.endTransmission(false);             // Send the Tx buffer, but send a restart to keep connection alive
   Wire.requestFrom(address, (uint8_t) 1);  // Read one byte from slave register address
   data = Wire.read();                      // Fill Rx buffer with result
+  //////frisbeem..log("Got "+String(data,HEX)+" From "+String(address,HEX)+"||"+String(subAddress,HEX));
   return data;                             // Return data read from slave register
 }
 
 void MPU_9250::readBytes(uint8_t address, uint8_t subAddress, uint8_t count, uint8_t * dest)
 {
+  ////frisbeem..log("Reading "+String(count,DEC)+" Bytes From "+String(address,HEX)+"||"+String(subAddress,HEX));
   Wire.beginTransmission(address);   // Initialize the Tx buffer
   Wire.write(subAddress);            // Put slave register address in Tx buffer
   Wire.endTransmission(false);       // Send the Tx buffer, but send a restart to keep connection alive
   uint8_t i = 0;
         Wire.requestFrom(address, count);  // Read bytes from slave register address
   while (Wire.available()) {
-        dest[i++] = Wire.read(); }         // Put read results in the Rx buffer
+        dest[i++] = Wire.read(); }        // Put read results in the Rx buffer
 }
