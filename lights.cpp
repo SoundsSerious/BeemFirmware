@@ -14,7 +14,7 @@ void Lights::initlaize()
 
 void Lights::update(uint8_t wait)
 {
-  if (frisbeem._motionState.stateNow() -> sleepModeActivated){
+  if (frisbeem._motionState.stateNow() -> sleepModeActivated || !_on){
     off();
     refresh();
     delay(250);

@@ -103,7 +103,7 @@ void MPU_9250::MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, 
  // Similar to Madgwick scheme but uses proportional and integral filtering on the error between estimated reference vectors and
  // measured ones.
 void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz)
-        {
+        {   //frisbeem._com.log("START Mahony", true);
             float q1 = q.w, q2 = q.x, q3 = q.y, q4 = q.z;   // short name local variable for readability
             float norm;
             float hx, hy, bx, bz;
@@ -191,7 +191,7 @@ void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, fl
             q.x = q2 * norm;
             q.y = q3 * norm;
             q.z = q4 * norm;
-
+            //frisbeem._com.log("END Mahony", true);
         }
 
 
@@ -253,12 +253,12 @@ void MPU_9250::update()
 {
   // If intPin goes high, all data registers have new data
   if (readByte(MPU9250_ADDRESS, INT_STATUS) & 0x01) {
-    //frisbeem..log("Interrupt"); // On interrupt, check if data ready interrupt
+    //frisbeem._com.log("Interrupt",true); // On interrupt, check if data ready interrupt
     //frisbeem..log("Reading ACL");
     readAccelData(accelCount);  // Read the x/y/z adc values
     //frisbeem..log("Got ACL");
     getAres();
-
+    //frisbeem._com.log("Ares "+String(aRes,DEC),true);
     // Now we'll calculate the accleration value into actual g's
     A.x = (float)accelCount[0]*aRes; // - accelBias[0];  // get actual g value, this depends on scale being set
     A.y = (float)accelCount[1]*aRes; // - accelBias[1];
@@ -289,7 +289,7 @@ void MPU_9250::update()
     M.z = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
   }
   else{
-    ////frisbeem..log(" No Interrupt ");
+    //frisbeem._com.log("No Interrupt", true);
   }
 
   Now = micros();
@@ -309,51 +309,6 @@ void MPU_9250::update()
   //MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
   ////frisbeem..log("Mahony");
   MahonyQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
-
-
-
-    delt_t = millis() - count;
-    //#if SEND_ORIENT_DATA
-    // Serial print and/or display at 0.5 s rate independent of data rates
-    delt_t = millis() - count;
-    if (delt_t > 10) { // update Serial once per ten miliseconds independent of read rate
-
-      int16_t q0int = q.w * 16384;
-      int16_t q1int = q.x * 16384;
-      int16_t q2int = q.y * 16384;
-      int16_t q3int = q.z * 16384;
-
-      byte q01 = q0int & 0xFF;
-      byte q00 = (q0int >> 8) & 0xFF;
-
-      byte q11 = q1int & 0xFF;
-      byte q10 = (q1int >> 8) & 0xFF;
-
-      byte q21 = q2int & 0xFF;
-      byte q20 = (q2int >> 8) & 0xFF;
-
-      byte q31 = q3int & 0xFF;
-      byte q30 = (q3int >> 8) & 0xFF;
-
-      orientationPacket[2] = q00;
-      orientationPacket[3] = q01;
-      orientationPacket[4] = q10;
-      orientationPacket[5] = q11;
-      orientationPacket[6] = q20;
-      orientationPacket[7] = q21;
-      orientationPacket[8] = q30;
-      orientationPacket[9] = q31;
-
-      //Serial.write(orientationPacket, 14);
-      orientationPacket[11]++;
-
-
-      count = millis();
-      sumCount = 0;
-      sum = 0;
-    }
-    //#endif
-
 }
 
 //===================================================================================================================

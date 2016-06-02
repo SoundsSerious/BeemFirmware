@@ -58,9 +58,10 @@ void COM::tick(){
 void COM::update(){
   log("Sending MDNS Information");
   mdns.processQueries();
-  read();
-  send_acl();
-  send_gyro();
+  lastMsg = read();
+  parseStringForMessage(lastMsg);
+  //send_acl();
+  //send_gyro();
 }
 
 void COM::open(){
@@ -87,7 +88,7 @@ void COM::close(){
   }
 }
 
-void COM::read(){
+String COM::read(){
   String message;
   log("Checking For Input");
   log(String(client.available())+" In Client Buffer");
@@ -95,7 +96,53 @@ void COM::read(){
     char out = client.read();
     message += String( out );
   }
-  log("Got "+message);
+  return message;
+}
+
+void COM::parseStringForMessage(String inputString){
+  //Messages Will End With A \r\n and will be of the format
+  //PRIMARY_CMD\tSECONDARY_CMD\tARGUMENT\r\n
+  //PRIMARY_CMD and SECONDARY_CMD are each 3 char (for development... int later)
+
+  //Combine The Unparsed String & inputString
+  //We will check for an ending, if one exists will parse the arguments
+  //If It Doesn't Exist We'll reset unParsedMsg = messageString to work at a
+  //Later Iteration
+  String messageString = unParsedMsg + inputString;
+  int currentIndex = 0;
+  int it = 0;
+  while( true ){ //This is dangerous to loop all the time
+    int endIndex = messageString.indexOf("\r\n",currentIndex);
+    if (endIndex == -1){ //Line Feed Character Return Not Found
+      unParsedMsg = messageString.substring(currentIndex);
+      unParsedMsg.replace("\r","");
+      unParsedMsg.replace("\n","");
+      break;
+    }
+    else{
+      //Check Primary Keys return "" (empty char if none). Format Message
+      String currentMessage = messageString.substring( currentIndex, endIndex);
+      currentMessage.replace("\r\n","");
+      String primary_key = currentMessage.substring(0,3);
+      String secondary_key = currentMessage.substring(4,7);
+      String argument = currentMessage.substring(8);
+      log(String(it)+" From: "+currentMessage, true);
+      log(String(it)+" Got: PK||"+primary_key+"||SK||"+secondary_key+"||ARG||"+argument, true);
+
+      //For Now We'll Handle The Command. Well want to event the sheeeet out of this later
+      handleCommand(primary_key, secondary_key, argument);
+      currentIndex = endIndex+1;
+      it++;
+    }
+  }//while
+}
+
+void COM::handleCommand(String pk, String sk, String arg)
+{
+  if (pk.equals("PWR")){
+    if (sk.equals("OFF")){ frisbeem._lights._on = false;}
+    if (sk.equals("ONN")){ frisbeem._lights._on = true;}
+  }
 }
 
 void COM::log(String message, bool force){
@@ -119,7 +166,6 @@ void COM::telemetry(String pck, String message){
     server.println( "TEL:\t"+pck+":\t"+ message );
   }
 }
-
 
 void COM::send_gyro(){
   //Send Gyro Values

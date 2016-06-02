@@ -10,6 +10,8 @@ public:
   Lights(): _strip( NUM_LED ){_strip.brightness = brightness;};
   ~Lights(){};
 
+  bool _on = true;
+
   Adafruit_DotStar _strip;
   uint8_t brightness = 100;
 

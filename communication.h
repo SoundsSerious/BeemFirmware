@@ -19,7 +19,7 @@ public:
 
   //Event Timing
   unsigned long old_time;
-  int tickCount = 50;
+  int tickCount = 100;
   int _tick = tickCount - 1; //Tick One Less than tickCount will print first time
 
   //MDNS
@@ -27,11 +27,17 @@ public:
   String serverMessage = "HTTP/1.1 200 Ok\n\n<html><body><h1>~HELLO BEEMO!~</h1></body></html>\n\n";
   std::vector<String> subServices;
   MDNS mdns;
+
+  //Client Server Objects
   TCPServer server = TCPServer(BEEMO_PORT);
   TCPClient client;
-  bool mdns_success;
 
-  String input;
+  //Message Parsing
+  String lastMsg;
+  String unParsedMsg;
+
+  //Boolean Values
+  bool mdns_success;
   bool debugMode = true;
   bool writeNow = true; //Tells log to write
   bool initialConnection = false;
@@ -43,15 +49,20 @@ public:
   void update();
   void open();
   void close();
-  void read();
+  String read();
+  void parseStringForMessage(String inputString);
+  void handleCommand(String pk, String sk, String arg);
 
   void tick();
+
   void initialize_cloud();
-  int initialize_could_offset(String commandName, int message);
+  int  initialize_could_offset(String commandName, int message);
   void initialize_mdns();
   void initialize_server();
+
   void send_acl();
   void send_gyro();
+
   void serial_sendTelemetry();
   void com_sendTelemetry();
   void com_sendRawAcl();
