@@ -122,7 +122,8 @@ void COM::parseStringForMessage(String inputString){
     else{
       //Check Primary Keys return "" (empty char if none). Format Message
       String currentMessage = messageString.substring( currentIndex, endIndex);
-      currentMessage.replace("\r\n","");
+      currentMessage.replace("\r","");
+      currentMessage.replace("\n","");
       String primary_key = currentMessage.substring(0,3);
       String secondary_key = currentMessage.substring(4,7);
       String argument = currentMessage.substring(8);
