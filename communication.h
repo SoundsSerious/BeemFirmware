@@ -39,7 +39,7 @@ public:
   //Boolean Values
   bool mdns_success;
   bool debugMode = true;
-  bool writeNow = true; //Tells log to write
+  bool writeNow = true; //Tells log to write. True Means First Time will print
   bool initialConnection = false;
 
   //Important Functions
@@ -55,23 +55,24 @@ public:
 
   void tick();
 
-  void initialize_cloud();
-  int  initialize_could_offset(String commandName, int message);
+  //Initialize Sub Funcitons
   void initialize_mdns();
   void initialize_server();
 
+  //Telemetry Functions
   void send_acl();
+  void send_acl_rl();
   void send_gyro();
 
-  void serial_sendTelemetry();
-  void com_sendTelemetry();
-  void com_sendRawAcl();
-  void com_sendRawGy();
-  void com_sendDmpAcl();
-  void com_sendWorldAcl();
-  void com_sendGyro();
-  void com_sendMag();
-  void com_sendEuler();
-  void com_sendGravity();
+  // void serial_sendTelemetry();
+  // void com_sendTelemetry();
+  // void com_sendRawAcl();
+  // void com_sendRawGy();
+  // void com_sendDmpAcl();
+  // void com_sendWorldAcl();
+  // void com_sendGyro();
+  // void com_sendMag();
+  // void com_sendEuler();
+  // void com_sendGravity();
 
 };

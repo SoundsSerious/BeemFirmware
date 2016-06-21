@@ -5,7 +5,7 @@ void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
   delay(300);
 
-  while(!Serial.available()){ Particle.process();};
+  //while(!Serial.available()){ Particle.process();};
 
   log("Initlaize:");
   log(WiFi.localIP());
@@ -61,7 +61,8 @@ void COM::update(){
   lastMsg = read();
   parseStringForMessage(lastMsg);
   //send_acl();
-  //send_gyro();
+  send_gyro();
+  send_acl_rl();
 }
 
 void COM::open(){
@@ -166,17 +167,26 @@ void COM::telemetry(String pck, String message){
   if ( initialConnection ){
     server.println( "TEL:\t"+pck+":\t"+ message );
   }
+  //Normally Commented... for debug
+  Serial.println( "TEL:\t"+pck+":\t"+ message );
 }
 
 void COM::send_gyro(){
   //Send Gyro Values
-  telemetry("GYR",  String(frisbeem._mpu.G.x,DEC)+","+
-                    String(frisbeem._mpu.G.y,DEC)+","+
-                    String(frisbeem._mpu.G.z,DEC)+";");
+  telemetry("GYR",  String(frisbeem._mpu.G.x)+","+
+                    String(frisbeem._mpu.G.y)+","+
+                    String(frisbeem._mpu.G.z)+";");
 }
 void COM::send_acl(){
   //Send ACL Values
-  telemetry("ACL",  String(frisbeem._mpu.A.x,DEC)+","+
-                    String(frisbeem._mpu.A.y,DEC)+","+
-                    String(frisbeem._mpu.A.z,DEC)+";");
+  telemetry("ACL",  String(frisbeem._mpu.A.x)+","+
+                    String(frisbeem._mpu.A.y)+","+
+                    String(frisbeem._mpu.A.z)+";");
+}
+
+void COM::send_acl_rl(){
+  //Send ACL Values
+  telemetry("ACL",  String(frisbeem._mpu.AFilt.x)+","+
+                    String(frisbeem._mpu.AFilt.y)+","+
+                    String(frisbeem._mpu.AFilt.z)+";");
 }

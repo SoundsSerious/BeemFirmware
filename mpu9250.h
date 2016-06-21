@@ -90,7 +90,7 @@ class MPU_9250 {
   float beta = sqrt(3.0f / 4.0f) * GyroMeasError;   // compute beta
   float zeta = sqrt(3.0f / 4.0f) * GyroMeasDrift;   // compute zeta, the other free parameter in the Madgwick scheme usually set to a small or zero value
   #define Kp 2.0f * 5.0f // these are the free parameters in the Mahony filter and fusion scheme, Kp for proportional feedback, Ki for integral
-  #define Ki 0.5f
+  #define Ki 0.0f
 
   uint32_t delt_t = 0; // used to control display output rate
   uint32_t count = 0, sumCount = 0; // used to control display output rate
@@ -100,7 +100,10 @@ class MPU_9250 {
   uint32_t Now = 0;        // used to calculate integration interval
 
   //float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
-  VectorFloat A,G,M;
+  //Raw Measurements
+  VectorFloat A, G, M;
+  //Intermediate Vectors For High Level Positional Algorithm
+  VectorFloat Grav, AFilt;//, Vel, Xtion;
   //float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
   Quaternion q;
   float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
@@ -128,8 +131,10 @@ class MPU_9250 {
   void getMres();
   void getGres();
   void getAres();
-  uint8_t dmpGetLinearAccel(float *v, float *vRaw, float *gravity);
-  uint8_t dmpGetGravity(float *g);
+  //uint8_t dmpGetLinearAccel(float *v, float *vRaw, float *gravity);
+  uint8_t dmpGetLinearAccel(VectorFloat &v, VectorFloat &vRaw, VectorFloat &gravity);
+  //uint8_t dmpGetGravity(float *g);
+  uint8_t dmpGetGravity(VectorFloat &g);
   void readAccelData(int16_t * destination);
   void readGyroData(int16_t * destination);
   void readMagData(int16_t * destination);
