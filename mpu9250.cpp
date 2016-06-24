@@ -103,7 +103,7 @@ void MPU_9250::MadgwickQuaternionUpdate(float ax, float ay, float az, float gx, 
  // Similar to Madgwick scheme but uses proportional and integral filtering on the error between estimated reference vectors and
  // measured ones.
 void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, float gy, float gz, float mx, float my, float mz)
-        {   frisbeem._com.log("START Mahony", true);
+        {   frisbeem._com.log("START Mahony");
             float q1 = q.w, q2 = q.x, q3 = q.y, q4 = q.z;   // short name local variable for readability
             float norm;
             float hx, hy, bx, bz;
@@ -191,7 +191,7 @@ void MPU_9250::MahonyQuaternionUpdate(float ax, float ay, float az, float gx, fl
             q.x = q2 * norm;
             q.y = q3 * norm;
             q.z = q4 * norm;
-            frisbeem._com.log("END Mahony", true);
+            frisbeem._com.log("END Mahony");
         }
 
 
@@ -288,7 +288,7 @@ void MPU_9250::update()
     M.z = (float)magCount[2]*mRes*magCalibration[2] - magbias[2];
   }
   else{
-    frisbeem._com.log("No Interrupt", true);
+    frisbeem._com.log("No Interrupt");
   }
 
   Now = micros();

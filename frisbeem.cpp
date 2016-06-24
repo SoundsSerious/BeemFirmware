@@ -79,7 +79,8 @@ void Frisbeem::processMotion()
   //Serial.print("Getting New Event #");Serial.println(_eventCount);
   currentMotionEvent = genNextEvent();
   currentMotionEvent.visit( this );//Subject Call notify()
-  //currentMotionEvent.visit( _motionState);//StateSwitchCall
+  currentMotionEvent.visit( &_motionState );//StateSwitchCall
+  //_motionState._states.back() -> handleInput( currentMotionEvent ); //Hack For Motion Direct
   //currentMotionEvent.visit( _powerState);//StateSwitchCall
 
 }

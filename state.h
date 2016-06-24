@@ -12,7 +12,8 @@ class IState
 {
 public:
   virtual void handleInput( Event &event ) = 0;
-  virtual void handleInput( MotionEvent &event ) = 0;
+  //virtual void handleInput( MotionEvent &event ) = 0;
+  virtual String type() = 0;
 };
 
 
@@ -24,10 +25,10 @@ public:
 
   bool sleepModeActivated = false;
   bool moving = true;
-  
+
   //Override handleInput for visitor pattern
-  virtual void handleInput( Event &event ) { };
-  virtual void handleInput( MotionEvent &event ) { };
+  virtual void handleInput( Event &event );
+  virtual void handleInput( MotionEvent &event );
   //virtual void handleInput( COMEvent &event ) = 0;
 
   //Other Important Functions
@@ -35,7 +36,7 @@ public:
   virtual void enter(){};
   virtual void leave(){};
 
-  String msg = "state";
+  virtual String type() {return "state";};
 };
 
 
@@ -68,9 +69,12 @@ public:
 
   int currentState;
 
-  String msg = "motionState";
-
+  //Need To Define Method All Event Types... C++ cannot double dispatch so
+  //It helps to overload the state event handlers... it can't do both at once
+  virtual void handleInput( Event &event );
   virtual void handleInput( MotionEvent &event);
+  virtual String type() {return "MotionState";};
+
 };
 
 
@@ -83,6 +87,8 @@ public:
   //Important Funcitons
   virtual void initialize();
   virtual void handleInput( Event &event);
+
+  virtual String type() {return "StateSwitch";};
 
   State* stateNow()
   {

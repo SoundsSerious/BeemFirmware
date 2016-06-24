@@ -5,16 +5,33 @@ void StateSwitch::initialize(){
   frisbeem._com.log("Pointer Assignment");
 
   _states.push_back( new MotionState() );
-  frisbeem._com.log(String("Last Item") + String(_states.back() -> msg ));
+  frisbeem._com.log(String("Last Item") + String(_states.back() -> type() ));
 }
 
 void StateSwitch::handleInput( Event &event)
-{ //Serial.println("Switch Handiling Input");
-  event.visit( stateNow() );
+{ frisbeem._com.log("Switch Handiling Input: "+event.type());
+  State *s = stateNow();
+  event.visit( s );
+}
+
+void State::handleInput(Event &event)
+{
+  frisbeem._com.log("State Handiling Event Input: "+event.type());
+}
+
+void State::handleInput(MotionEvent &event)
+{
+  frisbeem._com.log("State Handiling MotionEvent Input: "+event.type());
+}
+
+void MotionState::handleInput(Event &event)
+{
+  frisbeem._com.log("MotionState Handiling Event Input: "+event.type() );
 }
 
 void MotionState::handleInput(MotionEvent &event)
   { //Initialize and do some physics math
+      frisbeem._com.log("MotionState Handiling MotionEvent Input: "+event.type());
       now = micros();
       newOmega = event.abs_omega;//();
       dOmega = newOmega - lastOmega;

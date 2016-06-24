@@ -13,6 +13,7 @@ void COM::initialize(){
   log(WiFi.gatewayIP());
   log(WiFi.SSID());
 
+  // Turned Off For Manual
   initialize_server();
   initialize_mdns();
 }
