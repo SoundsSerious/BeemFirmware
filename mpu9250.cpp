@@ -291,9 +291,7 @@ void MPU_9250::update()
     frisbeem._com.log("No Interrupt");
   }
 
-  Now = micros();
-  deltat = ((Now - lastUpdate)/1000000.0f); // set integration time by time elapsed since last filter update
-  lastUpdate = Now;
+
 
   sum += deltat; // sum for averaging filter update rate
   sumCount++;
@@ -307,10 +305,40 @@ void MPU_9250::update()
   // Pass gyro rate as rad/s
   //MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
   frisbeem._com.log("Mahony");
+  Now = micros();
+  deltat = ((Now - lastUpdate)/1000000.0f); // set integration time by time elapsed since last filter update
+
   MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.y,M.x,M.z);
 
   dmpGetGravity( Grav );
-  dmpGetLinearAccel(AFilt, A, Grav);
+  dmpGetLinearAccel(Alin, A, Grav);
+  Awrld = Alin.getRotated( &q );
+  determineVelocityNPosition(Awrld,V,X);
+  lastUpdate = Now;
+}
+
+//Performs Double Integration
+void MPU_9250::determineVelocityNPosition(VectorFloat &Awrld, VectorFloat &Vel, VectorFloat &Pos)
+{ //if (frisbeem._motionState.stateNow() -> moving)
+  //{ //Perform Integration If Moving
+    Vel.x += Awrld.x * deltat;
+    Vel.y += Awrld.y * deltat;
+    Vel.z += Awrld.z * deltat;
+  //}
+  // else
+  // {
+  //   Vel.x = 0;
+  //   Vel.y = 0;
+  //   Vel.z = 0;
+  // }
+  Pos.x += Vel.x * deltat;
+  Pos.y += Vel.y * deltat;
+  Pos.z += Vel.z * deltat;
+
+  if (Pos.z < 0){ //Protect Against Going Through Floor
+    Pos.z = 0;
+  }
+
 }
 
 //===================================================================================================================

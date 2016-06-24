@@ -103,8 +103,7 @@ class MPU_9250 {
   //Raw Measurements
   VectorFloat A, G, M;
   //Intermediate Vectors For High Level Positional Algorithm
-  VectorFloat Grav, AFilt;//, Vel, Xtion;
-  //float q[4] = {1.0f, 0.0f, 0.0f, 0.0f};    // vector to hold quaternion
+  VectorFloat Grav, Alin, Awrld, V, X;
   Quaternion q;
   float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
@@ -141,6 +140,7 @@ class MPU_9250 {
   int16_t readTempData();
   void initAK8963(float * destination);
   void initMPU9250();
+  void determineVelocityNPosition(VectorFloat &Alin, VectorFloat &Vel, VectorFloat &Pos);
   // Function which accumulates gyro and accelerometer data after device initialization. It calculates the average
   // of the at-rest readings and then loads the resulting offsets into accelerometer and gyro bias registers.
   void calibrateMPU9250(float * dest1, float * dest2);

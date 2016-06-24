@@ -63,6 +63,8 @@ public:
   void send_acl();
   void send_acl_rl();
   void send_gyro();
+  void send_vel();
+  void send_pos();
 
   // void serial_sendTelemetry();
   // void com_sendTelemetry();

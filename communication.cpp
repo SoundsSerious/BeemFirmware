@@ -62,8 +62,10 @@ void COM::update(){
   lastMsg = read();
   parseStringForMessage(lastMsg);
   //send_acl();
-  send_gyro();
-  send_acl_rl();
+  //send_gyro();
+  //send_acl_rl();
+  //send_vel();
+  send_pos();
 }
 
 void COM::open(){
@@ -187,7 +189,21 @@ void COM::send_acl(){
 
 void COM::send_acl_rl(){
   //Send ACL Values
-  telemetry("ACL",  String(frisbeem._mpu.AFilt.x)+","+
-                    String(frisbeem._mpu.AFilt.y)+","+
-                    String(frisbeem._mpu.AFilt.z)+";");
+  telemetry("ACL",  String(frisbeem._mpu.Awrld.x)+","+
+                    String(frisbeem._mpu.Awrld.y)+","+
+                    String(frisbeem._mpu.Awrld.z)+";");
+}
+
+void COM::send_vel(){
+  //Send ACL Values
+  telemetry("VEL",  String(frisbeem._mpu.V.x)+","+
+                    String(frisbeem._mpu.V.y)+","+
+                    String(frisbeem._mpu.V.z)+";");
+}
+
+void COM::send_pos(){
+  //Send ACL Values
+  telemetry("POS",  String(frisbeem._mpu.X.x)+","+
+                    String(frisbeem._mpu.X.y)+","+
+                    String(frisbeem._mpu.X.z)+";");
 }
