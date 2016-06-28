@@ -10,7 +10,7 @@
 //SYSTEM_THREAD( ENABLED );
 Frisbeem frisbeem;
 
-#define I2C_SPEED (uint32_t)400000 //400Khz can push 600Khz sometimes
+#define I2C_SPEED (uint32_t)600000 //400Khz can push 600Khz sometimes
 
 
 void setup() {

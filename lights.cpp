@@ -20,9 +20,13 @@ void Lights::update(uint8_t wait)
     delay(250);
   }
   else{
-    rainbow(frisbeem.lightOffset );
+    //rainbow(frisbeem.lightOffset );
+
+    if ( frisbeem._mpu.rest ){ blue(); }
+    else if(frisbeem._mpu.spin ){ red(); }
+    else if( ~frisbeem._mpu.rest ){ green(); }
     refresh();
-    delay(wait);
+    //delay(wait);
   }
 }
 

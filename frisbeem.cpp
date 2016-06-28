@@ -30,12 +30,20 @@ void Frisbeem::update(){
   //Update COM layer
   _com.update();
 
+
   //Handle Other Stuff
   _com.log("Updating...");
   //Update MPU
-  _com.log("Updating MPU");
-  _mpu.update();
+  start = micros();
+  //Physics Update Inner Loop
+  while ( micros() - start < renderInterval) {
+    _com.log("Updating MPU");
+    _mpu.update();
+    updateThetaOffset();
 
+    //Send telemetry here... idk?
+    _com.send_telemetry();
+  }
   //create newEvent and process events (circular buffer)
   _com.log("Generating Events");
   processMotion();
@@ -44,11 +52,11 @@ void Frisbeem::update(){
   //Send Event To Current Motion State
   //Serial.println("Calling handleInput");
   _com.log("Making Decisions");
-  //_motionState.handleInput( currentMotionEvent );
+
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
-  updateThetaOffset();
-  _lights.update(1);
+
+  _lights.update(0);
 
   //Close COM to end client
   _com.close();
@@ -59,7 +67,9 @@ void Frisbeem::updateThetaOffset()
   thisTime = micros();
 
   //Integrate For Theta
-  thetaOffset -= _mpu.G.z * (thisTime - lastTime) / 1000000;
+  if ( abs(_mpu.G.z) > 0.1){
+    thetaOffset -= _mpu.G.z * (thisTime - lastTime) / 1000000;
+  }
   //Catch & Adjust For Theta Over Limit
   if (thetaOffset > 360){
     thetaOffset -= 360;

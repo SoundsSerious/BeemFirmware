@@ -43,6 +43,11 @@ public:
   virtual void initlaize();
   virtual void update();
 
+  //Parameters For Interloop
+  int start;
+  int targetFPS = 20;
+  uint32_t budgetRefreshTime = 2500;
+  uint32_t renderInterval = (1000000 / targetFPS) - budgetRefreshTime; //Microseconds aka 60fps
   //Sandbox Functions
   unsigned long lastTime,thisTime;
   int lightOffset = 0;

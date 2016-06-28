@@ -60,6 +60,8 @@ public:
   void initialize_server();
 
   //Telemetry Functions
+  void send_telemetry();
+  void send_time();
   void send_acl();
   void send_acl_rl();
   void send_gyro();
