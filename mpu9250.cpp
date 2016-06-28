@@ -291,11 +291,14 @@ void MPU_9250::update()
     frisbeem._com.log("No Interrupt");
   }
 
-
-
   sum += deltat; // sum for averaging filter update rate
   sumCount++;
 
+  calculatePositionalInformation();
+}
+
+//Positional Information Calculations
+void MPU_9250::calculatePositionalInformation(){
   // Sensors x (y)-axis of the accelerometer is aligned with the y (x)-axis of the magnetometer;
   // the magnetometer z-axis (+ down) is opposite to z-axis (+ up) of accelerometer and gyro!
   // We have to make some allowance for this orientationmismatch in feeding the output to the quaternion filter.
@@ -303,41 +306,89 @@ void MPU_9250::update()
   // in the LSM9DS0 sensor. This rotation can be modified to allow any convenient orientation convention.
   // This is ok by aircraft orientation standards!
   // Pass gyro rate as rad/s
-  //MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.z,M.x,M.z);
-  frisbeem._com.log("Mahony");
-  Now = micros();
-  deltat = ((Now - lastUpdate)/1000000.0f); // set integration time by time elapsed since last filter update
+  now = micros();
+  deltat = ((now - lastUpdate)/1000000.0f); // set integration time by time elapsed since last filter update
 
+  frisbeem._com.log("Madgwick");
   MadgwickQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.y,M.x,M.z);
+
+  // frisbeem._com.log("Mahony");
+  // MahonyQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.y,M.x,M.z);
 
   dmpGetGravity( Grav );
   dmpGetLinearAccel(Alin, A, Grav);
   Awrld = Alin.getRotated( &q );
+  determineIsSpinning();
+  determineIsRest();
   determineVelocityNPosition(Awrld,V,X);
-  lastUpdate = Now;
+  lastUpdate = now;
 }
 
+void MPU_9250::determineIsSpinning()
+{
+  if ( G.z > spinThreshold ){ spin = true;}
+  else{ spin = false;}
+}
+//Determine If At rest
+void MPU_9250::determineIsRest()
+{
+  //Root Sum Square XY acceleration
+  Axy = sqrt(Awrld.x*Awrld.x + Awrld.y*Awrld.y);
+  //Low Pass Filter
+  Axy_lp = Axy_lp + (Axy - Axy_lp) * Kaxy_lowpass;
+  //Check For Stable State To Zero Low Pass
+  if (Axy < Axy_MagThresh && Axy_lp > Axy_MagThresh){lp_err_running_count += 1;}
+  else {lp_err_running_count = 0;}
+  if ( lp_err_running_count > lp_err_count_thresh ){ Axy_lp = 0; }
+  //Check If Not Spinning, And Then Set Rest True If Below Criteria
+  if ( spin ){ rest = false;}
+  else
+  {
+    if ( Axy_lp < Axy_MagThresh){ rest = true;}
+    else if ( Axy_lp >= Axy_MagThresh){ rest = false;}
+ }
+}
 //Performs Double Integration
 void MPU_9250::determineVelocityNPosition(VectorFloat &Awrld, VectorFloat &Vel, VectorFloat &Pos)
-{ //if (frisbeem._motionState.stateNow() -> moving)
-  //{ //Perform Integration If Moving
-    Vel.x += Awrld.x * deltat;
-    Vel.y += Awrld.y * deltat;
-    Vel.z += Awrld.z * deltat;
-  //}
-  // else
-  // {
-  //   Vel.x = 0;
-  //   Vel.y = 0;
-  //   Vel.z = 0;
-  // }
-  Pos.x += Vel.x * deltat;
-  Pos.y += Vel.y * deltat;
-  Pos.z += Vel.z * deltat;
+{
+  //Store Last Iteration Variables
+  float vx,vy,vz;
+  vx = Vel.x; vy = Vel.y; vz = Vel.z;
 
-  if (Pos.z < 0){ //Protect Against Going Through Floor
-    Pos.z = 0;
+  float h = deltat / 2.0;
+
+  if ( rest == false )
+  { //Perform Integration If Moving (Not Resting )
+    float h_mps = h * 9.81; //Gravity Beeches
+    Vel.x += ( Awrld.x + Alast.x ) * h_mps;
+    Vel.y += ( Awrld.y + Alast.y ) * h_mps;
+    Vel.z += ( Awrld.z + Alast.z ) * h_mps;
   }
+  else
+  { //If Resting Set Velocity Zero
+    Vel.x = 0;
+    Vel.y = 0;
+    Vel.z = 0;
+  }
+  //If Spinning Integrate Position
+  if ( spin ){
+    Pos.x += ( Vel.x + vx ) * h;
+    Pos.y += ( Vel.y + vy ) * h;
+    Pos.z += ( Vel.z + vz ) * h;
+    if (Pos.z < 0){ //Protect Against Going Through Floor
+      Pos.z = 0;
+    }
+  }
+  //If Resting Set Position To 0,0,1 m off ground
+  else if ( rest ){
+      Pos.x = 0;
+      Pos.y = 0;
+      Pos.z = 1;
+  }
+
+
+  //Store This Acceleration Value
+  Alast.x = Awrld.x; Alast.y = Awrld.y; Alast.z = Awrld.z;
 
 }
 
@@ -502,7 +553,7 @@ void MPU_9250::initMPU9250()
   writeByte(MPU9250_ADDRESS, CONFIG, 0x03);
 
  // Set sample rate = gyroscope output rate/(1 + SMPLRT_DIV)
-  writeByte(MPU9250_ADDRESS, SMPLRT_DIV, 0x04);  // Use a 200 Hz rate; a rate consistent with the filter update rate
+  writeByte(MPU9250_ADDRESS, SMPLRT_DIV, 0x00);  // Use a 1000 Hz rate; a rate consistent with the filter update rate
                                     // determined inset in CONFIG above
 
  // Set gyroscope full scale range

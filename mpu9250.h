@@ -97,13 +97,26 @@ class MPU_9250 {
   float pitch, yaw, roll;
   float deltat = 0.0f, sum = 0.0f;        // integration interval for both filter schemes
   uint32_t lastUpdate = 0, firstUpdate = 0; // used to calculate integration interval
-  uint32_t Now = 0;        // used to calculate integration interval
+  uint32_t now = 0;        // used to calculate integration interval
 
-  //float ax, ay, az, gx, gy, gz, mx, my, mz; // variables to hold latest sensor data values
+  //Low Pass Filter
+  float Kaxy_lowpass = 0.005;
+  float Axy, Axy_lp;
+  float Axy_MagThresh = 0.1;
+  int lp_err_running_count = 0;
+  int lp_err_count_thresh = 20;
+
+  //Spin threshold
+  float spinThreshold = 200;
+
+  //Motion States
+  bool rest = true;
+  bool spin = false;
+
   //Raw Measurements
   VectorFloat A, G, M;
   //Intermediate Vectors For High Level Positional Algorithm
-  VectorFloat Grav, Alin, Awrld, V, X;
+  VectorFloat Grav, Alin, Awrld, Alast, V, X;
   Quaternion q;
   float eInt[3] = {0.0f, 0.0f, 0.0f};       // vector to hold integral error for Mahony method
 
@@ -140,7 +153,13 @@ class MPU_9250 {
   int16_t readTempData();
   void initAK8963(float * destination);
   void initMPU9250();
+
+  //Motion Intellegence
+  void calculatePositionalInformation();
+  void determineIsSpinning();
+  void determineIsRest();
   void determineVelocityNPosition(VectorFloat &Alin, VectorFloat &Vel, VectorFloat &Pos);
+
   // Function which accumulates gyro and accelerometer data after device initialization. It calculates the average
   // of the at-rest readings and then loads the resulting offsets into accelerometer and gyro bias registers.
   void calibrateMPU9250(float * dest1, float * dest2);

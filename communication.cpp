@@ -61,11 +61,7 @@ void COM::update(){
   mdns.processQueries();
   lastMsg = read();
   parseStringForMessage(lastMsg);
-  //send_acl();
-  //send_gyro();
-  //send_acl_rl();
-  //send_vel();
-  send_pos();
+  send_telemetry();
 }
 
 void COM::open(){
@@ -148,13 +144,24 @@ void COM::handleCommand(String pk, String sk, String arg)
     if (sk.equals("OFF")){ frisbeem._lights._on = false;}
     if (sk.equals("ONN")){ frisbeem._lights._on = true;}
   }
+  if (pk.equals("TEL")){
+    if (sk.equals("CAL"))
+    {
+      // Calibrate gyro and accelerometers, load biases in bias registers
+      frisbeem._mpu.calibrateMPU9250(frisbeem._mpu.gyroBias, frisbeem._mpu.accelBias);
+      delay(1000);
+      frisbeem._mpu.initMPU9250();
+      frisbeem._mpu.Axy_lp = 0;
+      frisbeem._mpu.Axy_lp = 0;
+     }
+  }
 }
 
 void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
   if ( writeNow || force){
-    Serial.println( "LOG:\t"+message );
+    //Serial.println( "LOG:\t"+message );
     if (initialConnection){
       server.println( "LOG:\t"+message );
     }
@@ -171,7 +178,20 @@ void COM::telemetry(String pck, String message){
     server.println( "TEL:\t"+pck+":\t"+ message );
   }
   //Normally Commented... for debug
-  Serial.println( "TEL:\t"+pck+":\t"+ message );
+  //Serial.println( "TEL:\t"+pck+":\t"+ message );
+}
+
+void COM::send_telemetry(){
+  send_time();
+  send_gyro();
+  send_acl_rl();
+  send_vel();
+  send_pos();
+}
+
+void COM::send_time(){
+  //Send Gyro Values
+  telemetry("TME",  String(micros()));
 }
 
 void COM::send_gyro(){
