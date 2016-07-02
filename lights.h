@@ -28,6 +28,8 @@ public:
   void colorAll(uint32_t c);
   void colorWipe(uint32_t c, uint8_t wait);
   void quarters(uint32_t c,uint32_t c2, uint8_t offset);
+  void scale(float value, float maxValue);
+  long map(int x, int in_min, int in_max, int out_min, int out_max);
 
   //Solid Colors
   virtual void blue();

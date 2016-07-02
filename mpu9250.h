@@ -102,7 +102,7 @@ class MPU_9250 {
   //Low Pass Filter
   float Kaxy_lowpass = 0.005;
   float Axy, Axy_lp;
-  float Axy_MagThresh = 0.1;
+  float Axy_MagThresh = 0.15;
   int lp_err_running_count = 0;
   int lp_err_count_thresh = 20;
 
@@ -112,7 +112,11 @@ class MPU_9250 {
   //Motion States
   bool rest = true;
   bool spin = false;
+  bool oldSpin,oldRest;
+  bool landed = false;
 
+  //Max Height
+  float throwMaxHeight=0;
   //Raw Measurements
   VectorFloat A, G, M;
   //Intermediate Vectors For High Level Positional Algorithm

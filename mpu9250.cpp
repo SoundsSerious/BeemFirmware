@@ -326,12 +326,14 @@ void MPU_9250::calculatePositionalInformation(){
 
 void MPU_9250::determineIsSpinning()
 {
+  oldSpin = spin;
   if ( G.z > spinThreshold ){ spin = true;}
   else{ spin = false;}
 }
 //Determine If At rest
 void MPU_9250::determineIsRest()
 {
+  oldRest = rest;
   //Root Sum Square XY acceleration
   Axy = sqrt(Awrld.x*Awrld.x + Awrld.y*Awrld.y);
   //Low Pass Filter
@@ -375,6 +377,9 @@ void MPU_9250::determineVelocityNPosition(VectorFloat &Awrld, VectorFloat &Vel, 
     Pos.x += ( Vel.x + vx ) * h;
     Pos.y += ( Vel.y + vy ) * h;
     Pos.z += ( Vel.z + vz ) * h;
+
+    if ( Pos.z > throwMaxHeight){throwMaxHeight = Pos.z;}
+
     if (Pos.z < 0){ //Protect Against Going Through Floor
       Pos.z = 0;
     }
@@ -386,6 +391,13 @@ void MPU_9250::determineVelocityNPosition(VectorFloat &Awrld, VectorFloat &Vel, 
       Pos.z = 1;
   }
 
+  if (spin == false)
+  { //Check If Was Spinning & Thrown Up
+    if ( oldSpin && throwMaxHeight > 3 ) {
+      frisbeem._lights.scale(throwMaxHeight,10);
+      throwMaxHeight = 0; // Reset
+    }
+  }
 
   //Store This Acceleration Value
   Alast.x = Awrld.x; Alast.y = Awrld.y; Alast.z = Awrld.z;
