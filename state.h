@@ -93,7 +93,7 @@ public:
 
   unsigned long stationaryCount = 0;
   unsigned long stationaryReset = -10;
-  unsigned long sleepThreshold = 25000;
+  unsigned long sleepThreshold = 50000;
 
   enum MotionStates {
     STATIONARY,

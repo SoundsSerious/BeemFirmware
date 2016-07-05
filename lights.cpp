@@ -12,11 +12,6 @@ void Lights::initlaize()
   delay(100);
 }
 
-long Lights::map(int x, int in_min, int in_max, int out_min, int out_max)
-{
-  return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min;
-}
-
 void Lights::update(uint8_t wait)
 {
   if (frisbeem._motionState.stateNow() -> sleepModeActivated || !_on ){
@@ -26,6 +21,7 @@ void Lights::update(uint8_t wait)
   }
   else{
     //rainbow(frisbeem.lightOffset );
+
     if ( frisbeem._mpu.rest ){ blue(); }
     else if(frisbeem._mpu.spin ){ red(); }
     else if( ~frisbeem._mpu.rest ){ green(); }
@@ -61,23 +57,6 @@ void Lights::rainbow(uint8_t offset) {
     }
   }
   whl++;
-}
-
-void Lights::scale(float value, float maxValue)
-{
-  uint16_t i;
-  int numPixels = _strip.numPixels();
-  if (value > maxValue){ value = maxValue;}
-  int lit = numPixels * (value / maxValue);
-  int whlval = wheel(map(lit,0,numPixels,0,255));
-
-  frisbeem._com.log("Score: "+String(value)+"|"+String(maxValue),true);
-  for (i=0;i<numPixels;i++){
-    if (i <= lit){ _strip.setPixelColor(i, whlval); }
-    else{ _strip.setPixelColor(i, _strip.Color(0,0,0)); }
-  }
-  refresh();
-  delay(2000);
 }
 
 void Lights::quarters(uint32_t c,uint32_t c2, uint8_t offset)
