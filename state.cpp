@@ -19,10 +19,10 @@ void State::handleInput(Event &event)
   frisbeem._com.log("State Handiling Event Input: "+event.type());
 }
 
-void State::handleInput(MotionEvent &event)
-{
-  frisbeem._com.log("State Handiling MotionEvent Input: "+event.type());
-}
+// void State::handleInput(MotionEvent &event)
+// {
+//   frisbeem._com.log("State Handiling MotionEvent Input: "+event.type());
+// }
 
 void MotionState::handleInput(Event &event)
 {
@@ -33,7 +33,7 @@ void MotionState::handleInput(MotionEvent &event)
   { //Initialize and do some physics math
       frisbeem._com.log("MotionState Handiling MotionEvent Input: "+event.type());
       now = micros();
-      newOmega = event.abs_omega;//();
+      newOmega = event.G.z;//();
       dOmega = newOmega - lastOmega;
       dt = (now - lastTime);
       dOmegaDt = dOmega *1E6/ dt;

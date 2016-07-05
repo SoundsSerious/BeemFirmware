@@ -1,5 +1,5 @@
-#import "communication.h"
-#import "globals.h"
+#include "communication.h"
+#include "globals.h"
 
 void COM::initialize(){
   Serial.begin( 115200 ); //Open Serial...Mmm breakfast
@@ -184,7 +184,7 @@ void COM::telemetry(String pck, String message){
 void COM::send_telemetry(){
   send_time();
   send_gyro();
-  send_acl_rl();
+  send_acl_lin();
   send_vel();
   send_pos();
 }
@@ -207,7 +207,14 @@ void COM::send_acl(){
                     String(frisbeem._mpu.A.z)+";");
 }
 
-void COM::send_acl_rl(){
+void COM::send_acl_lin(){
+  //Send ACL Values
+  telemetry("ACL",  String(frisbeem._mpu.Alin.x)+","+
+                    String(frisbeem._mpu.Alin.y)+","+
+                    String(frisbeem._mpu.Alin.z)+";");
+}
+
+void COM::send_acl_wlrd(){
   //Send ACL Values
   telemetry("ACL",  String(frisbeem._mpu.Awrld.x)+","+
                     String(frisbeem._mpu.Awrld.y)+","+
