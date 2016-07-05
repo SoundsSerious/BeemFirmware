@@ -13,7 +13,7 @@ void Frisbeem::initlaize(){
   _lights.initlaize();
   //Serial.println("Swith State Creation");
   _com.log("Initalizing Motion...");
-  _motionState = MotionSwitch();
+  _motionState = StateSwitch();
   //Serial.println("Motion State Creation");
   _com.log("Go For Motion");
   _motionState.initialize();
@@ -39,13 +39,14 @@ void Frisbeem::update(){
   while ( micros() - start < renderInterval) {
     _com.log("Updating MPU");
     _mpu.update();
-    processMotion();
     updateThetaOffset();
+
     //Send telemetry here... idk?
     _com.send_telemetry();
   }
   //create newEvent and process events (circular buffer)
   _com.log("Generating Events");
+  processMotion();
   //Notify Observers Of new Event
   _com.log("Hollerin'");
   //Send Event To Current Motion State
@@ -96,5 +97,5 @@ void Frisbeem::processMotion()
 
 MotionEvent Frisbeem::genNextEvent()
 { //For Now Look At Omegea (w)
-  return MotionEvent( _mpu.G, _mpu.Awrld, _mpu.V, _mpu.X );
+  return MotionEvent( _mpu.G.z );
 }

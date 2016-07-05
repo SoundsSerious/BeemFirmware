@@ -1,4 +1,4 @@
-#include "application.h"
+#import "application.h"
 #undef min
 #undef max
 #include <vector>
@@ -28,7 +28,7 @@ public:
 
   //Override handleInput for visitor pattern
   virtual void handleInput( Event &event );
-  //virtual void handleInput( MotionEvent &event );
+  virtual void handleInput( MotionEvent &event );
   //virtual void handleInput( COMEvent &event ) = 0;
 
   //Other Important Functions
@@ -36,49 +36,16 @@ public:
   virtual void enter(){};
   virtual void leave(){};
 
-  virtual String type() {return "State";};
+  virtual String type() {return "state";};
 };
 
-class StateSwitch: public State
-{
-  //Class that passes argument to current state
-public:
-  int currentState = 0;
-  std::vector<State*>  _states;
-  //Important Funcitons
-  virtual void initialize();
-  virtual void handleInput( Event &event);
 
-  virtual String type() {return "StateSwitch";};
-
-  State* stateNow()
-  {
-    return _states.back();
-  };
-  //Not Implemented Yet
-  virtual void update() {
-    _states[ currentState ] -> update();
-  };
-  virtual void enter() {
-    _states[ currentState ] -> enter();
-  };
-  virtual void leave() {
-    _states[ currentState ] -> leave();
-  };
-
-};
-
-//Motion States
+//Initial States
 //Airborne Transition If GYZ is greater than 450
 //Stationary If GYZ is less than 10
 //
 
-class Motion
-{
-  virtual void handleInput( MotionEvent &event);
-};
-
-class MotionState: public State, public Motion
+class MotionState: public State
 {
 public:
   //Physical Values
@@ -110,6 +77,32 @@ public:
 
 };
 
-class MotionSwitch: public StateSwitch, public Motion
+
+class StateSwitch: public State
 {
+  //Class that passes argument to current state
+public:
+  int currentState = 0;
+  std::vector<State*>  _states;
+  //Important Funcitons
+  virtual void initialize();
+  virtual void handleInput( Event &event);
+
+  virtual String type() {return "StateSwitch";};
+
+  State* stateNow()
+  {
+    return _states.back();
+  };
+  //Not Implemented Yet
+  virtual void update() {
+    _states[ currentState ] -> update();
+  };
+  virtual void enter() {
+    _states[ currentState ] -> enter();
+  };
+  virtual void leave() {
+    _states[ currentState ] -> leave();
+  };
+
 };

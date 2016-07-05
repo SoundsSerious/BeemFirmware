@@ -63,8 +63,7 @@ public:
   void send_telemetry();
   void send_time();
   void send_acl();
-  void send_acl_lin();
-  void send_acl_wlrd();
+  void send_acl_rl();
   void send_gyro();
   void send_vel();
   void send_pos();

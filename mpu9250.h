@@ -26,6 +26,7 @@
  We are also using the 400 kHz fast I2C mode by setting the TWI_FREQ  to 400000L /twi.h utility file.
  */
 #include "application.h"
+#include "math.h"
 #include "3dmath.h"
 #include "mpu9250_registers.h"
 

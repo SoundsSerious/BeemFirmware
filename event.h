@@ -1,11 +1,8 @@
 #include "application.h"
-#include "state.h"
-#include "subject.h"
+#import "state.h"
+#import "subject.h"
 //#import "observer.h"
 //#include "globals.h"
-
-//Predeclare this... need to use reference for values tho
-class VectorFloat;
 
 class IEvent
 {
@@ -34,8 +31,8 @@ public:
 class MotionEvent: public Event
 {
 public:
-  MotionEvent(){};
-  MotionEvent( VectorFloat &Gin, VectorFloat &Ain, VectorFloat &Vin, VectorFloat &Xin );
+  MotionEvent(){abs_omega = 0.0;};
+  MotionEvent( float omega ){abs_omega = abs(omega);};
   ~MotionEvent(){};
 
   virtual String type() {return "MotionEvent";};
@@ -46,8 +43,7 @@ public:
   virtual void visit(Observer *o); //Observer
   virtual void visit(StateSwitch *s); //State
 
-  //These will need to be used in the same inner loop..
-  VectorFloat G, A, V, X;
+  float abs_omega;
 };
 
 

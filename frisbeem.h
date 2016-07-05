@@ -1,5 +1,4 @@
 #include "application.h"
-#include "3dmath.h"
 #include "mpu9250.h"
 #include "lights.h"
 #include "communication.h"
@@ -22,10 +21,10 @@ public:
   //Physical parameters
 
   //States
-  //StateSwitch _powerState;
-  MotionSwitch _motionState;
-  // StateSwitch _lightMode;
-  // StateSwitch _gameMode;
+  StateSwitch _powerState;
+  StateSwitch _motionState;
+  StateSwitch _lightMode;
+  StateSwitch _gameMode;
 
   //Hardware
   MPU_9250 _mpu;
