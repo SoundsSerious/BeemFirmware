@@ -1,11 +1,13 @@
-#import "application.h"
+#include"application.h"
 #undef min
 #undef max
 #include <vector>
-using namespace std;
+//using namespace std;
 
+//Predeclare
 class Event;
 class MotionEvent;
+
 #define MAX_STATES 50 //'Murica
 //float MOI = 0.008748; //Frisbeem Moment Of Inertia
 class IState

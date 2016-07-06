@@ -33,7 +33,7 @@ void MotionState::handleInput(MotionEvent &event)
   { //Initialize and do some physics math
       frisbeem._com.log("MotionState Handiling MotionEvent Input: "+event.type());
       now = micros();
-      newOmega = event.abs_omega;//();
+      newOmega = event.G.z;//();
       dOmega = newOmega - lastOmega;
       dt = (now - lastTime);
       dOmegaDt = dOmega *1E6/ dt;

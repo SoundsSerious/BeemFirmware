@@ -1,8 +1,11 @@
 #include "application.h"
-#import "state.h"
-#import "subject.h"
-//#import "observer.h"
-//#include "globals.h"
+#include "3dmath.h"
+
+//Fwd Declaration
+class State;
+class Subject;
+class Observer;
+class StateSwitch;
 
 class IEvent
 {
@@ -31,8 +34,8 @@ public:
 class MotionEvent: public Event
 {
 public:
-  MotionEvent(){abs_omega = 0.0;};
-  MotionEvent( float omega ){abs_omega = abs(omega);};
+  MotionEvent(){};
+  MotionEvent( VectorFloat &Gin, VectorFloat &Ain, VectorFloat &Vin, VectorFloat &Xin);
   ~MotionEvent(){};
 
   virtual String type() {return "MotionEvent";};
@@ -43,7 +46,7 @@ public:
   virtual void visit(Observer *o); //Observer
   virtual void visit(StateSwitch *s); //State
 
-  float abs_omega;
+  VectorFloat G,A,V,X;
 };
 
 

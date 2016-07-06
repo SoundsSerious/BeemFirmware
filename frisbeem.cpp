@@ -40,13 +40,12 @@ void Frisbeem::update(){
     _com.log("Updating MPU");
     _mpu.update();
     updateThetaOffset();
-
+    processMotion();
     //Send telemetry here... idk?
     _com.send_telemetry();
   }
   //create newEvent and process events (circular buffer)
   _com.log("Generating Events");
-  processMotion();
   //Notify Observers Of new Event
   _com.log("Hollerin'");
   //Send Event To Current Motion State
@@ -55,7 +54,6 @@ void Frisbeem::update(){
 
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
-
   _lights.update(0);
 
   //Close COM to end client
@@ -92,10 +90,9 @@ void Frisbeem::processMotion()
   currentMotionEvent.visit( &_motionState );//StateSwitchCall
   //_motionState._states.back() -> handleInput( currentMotionEvent ); //Hack For Motion Direct
   //currentMotionEvent.visit( _powerState);//StateSwitchCall
-
 }
 
 MotionEvent Frisbeem::genNextEvent()
 { //For Now Look At Omegea (w)
-  return MotionEvent( _mpu.G.z );
+  return MotionEvent( _mpu.G, _mpu.A, _mpu.V, _mpu.X );
 }
