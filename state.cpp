@@ -14,26 +14,20 @@ void StateSwitch::handleInput( Event &event)
   event.visit( s );
 }
 
-void State::handleInput(Event &event)
+void MotionState::handleInput( MotionEvent &motion )
 {
-  frisbeem._com.log("State Handiling Event Input: "+event.type());
+  //Set Values Going Out
+  Glast = motion.G;
+  Alast = motion.A;
+  Vlast = motion.V;
+  Xlast = motion.X;
 }
 
-void State::handleInput(MotionEvent &event)
-{
-  frisbeem._com.log("State Handiling MotionEvent Input: "+event.type());
-}
-
-void MotionState::handleInput(Event &event)
-{
-  frisbeem._com.log("MotionState Handiling Event Input: "+event.type() );
-}
-
-void MotionState::handleInput(MotionEvent &event)
+void MotionState::update()
   { //Initialize and do some physics math
-      frisbeem._com.log("MotionState Handiling MotionEvent Input: "+event.type());
+      frisbeem._com.log("MotionState Updating..");
       now = micros();
-      newOmega = event.G.z;//();
+      newOmega = Glast.z;//();
       dOmega = newOmega - lastOmega;
       dt = (now - lastTime);
       dOmegaDt = dOmega *1E6/ dt;
@@ -73,16 +67,13 @@ void MotionState::handleInput(MotionEvent &event)
       if (sleepModeActivated){
        //Turn Off Lights. Switch Arduino to Low Power Consumption.
        frisbeem._com.log("Sleep Mode");
-
       }
       else {
         if (moving) { //Rainbow Pattern
           frisbeem._com.log("Airborne");
-          currentState = AIRBORNE;
         }
         else{ //Stationary
           frisbeem._com.log("Stationary");
-          currentState = STATIONARY;
         }
       }
       //delay(50);//temp

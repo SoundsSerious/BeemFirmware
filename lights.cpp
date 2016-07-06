@@ -14,20 +14,26 @@ void Lights::initlaize()
 
 void Lights::update(uint8_t wait)
 {
-  if (frisbeem._motionState.stateNow() -> sleepModeActivated || !_on ){
-    off();
-    refresh();
-    delay(250);
-  }
-  else{
+  // if (frisbeem._motionState.stateNow() -> sleepModeActivated || !_on ){
+  //   off();
+  //   refresh();
+  //   delay(250);
+  // }
+  // else{
     //rainbow(frisbeem.lightOffset );
 
     if ( frisbeem._mpu.rest ){ blue(); }
     else if(frisbeem._mpu.spin ){ red(); }
     else if( ~frisbeem._mpu.rest ){ green(); }
-    refresh();
+    if ( show ){//Alternate for POV
+      refresh();
+      show = !show;
+    }
+    else{
+      show = !show;
+    }
     //delay(wait);
-  }
+  // }
 }
 
 void Lights::refresh(){

@@ -11,7 +11,8 @@ public:
   ~Lights(){};
 
   bool _on = true;
-
+  bool show = true;
+  
   Adafruit_DotStar _strip;
   uint8_t brightness = 100;
 
