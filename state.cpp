@@ -1,12 +1,8 @@
 #import "state.h"
 #import "globals.h"
 
-void StateSwitch::initialize(){
-  frisbeem._com.log("Pointer Assignment");
-
-  _states.push_back( new MotionState() );
-  frisbeem._com.log(String("Last Item") + String(_states.back() -> type() ));
-}
+//Make One Internal Instance Of MotionData to Share
+MotionData motionData = MotionData();
 
 void StateSwitch::handleInput( Event &event)
 { frisbeem._com.log("Switch Handiling Input: "+event.type());
@@ -14,8 +10,51 @@ void StateSwitch::handleInput( Event &event)
   event.visit( s );
 }
 
+////////////////////////////////////////////////////////////////////////////////
+//MOTION STATES
+////////////////////////////////////////////////////////////////////////////////
+
+void MotionSwitch::initialize()
+{
+  //Add States In Order Of ENUM (Because It Matters!)
+  _states.push_back(&restState);
+  _states.push_back(&motionState);
+  _states.push_back(&spinState);
+}
+
+void MotionSwitch::handleInput( Event &event)
+{ frisbeem._com.log("MotionSwitch Handiling Input: "+event.type());
+  MotionState *s = stateNow();
+  event.visit( s );
+}
+
+void MotionSwitch::handleInput( MotionEvent &motion)
+{ frisbeem._com.log("MotionSwitch Handiling Motion Input: "+motion.type());
+  MotionState *s = stateNow();
+  motion.visit( s );
+}
+
+MotionState::MotionState()
+{
+  _motionData = &motionData;
+}
+
 void MotionState::handleInput( MotionEvent &motion )
 {
+  _motionEvent = &motion;
+  //Check Spin
+  if ( motion.G.z > ( _motionData -> spinThreshold) )
+  {
+    frisbeem._motionState.currentState = MotionSwitch::SPIN;
+  }
+  else if( frisbeem._mpu.rest ) //Check If Resting
+  {
+    frisbeem._motionState.currentState = MotionSwitch::REST;
+  }
+  else{ frisbeem._motionState.currentState = MotionSwitch::MOTION; }
+
+  //Update State
+  update();
   //Set Values Going Out
   Glast = motion.G;
   Alast = motion.A;
@@ -26,50 +65,50 @@ void MotionState::handleInput( MotionEvent &motion )
 void MotionState::update()
   { //Initialize and do some physics math
       frisbeem._com.log("MotionState Updating..");
-      now = micros();
-      newOmega = Glast.z;//();
-      dOmega = newOmega - lastOmega;
-      dt = (now - lastTime);
-      dOmegaDt = dOmega *1E6/ dt;
+      _motionData -> now = micros();
+      _motionData -> newOmega = _motionEvent -> G.z;//();
+      _motionData -> dOmega = _motionData -> newOmega - _motionData -> lastOmega;
+      _motionData ->dt = (_motionData ->now - _motionData ->lastTime);
+      _motionData ->dOmegaDt = _motionData ->dOmega *1E6/ _motionData ->dt;
 
 
 
       //Apply Torque Through Low Pass Filter
-      _torque = 0.008748 * dOmegaDt;
-      torque = 0.95 * _torque + 0.05 * torque;
+      _motionData ->_torque = 0.008748 * _motionData ->dOmegaDt;
+      _motionData ->torque = 0.95 * _motionData ->_torque + 0.05 * _motionData ->torque;
 
       //Serial.print("Torque \t");Serial.println(torque);
       //Serial.print("Omega \t");Serial.println(newOmega);
-      if (newOmega > 200){ //Airborne
-          stationaryCount = 0;
-          moving = true;
+      if (_motionData ->newOmega > 200){ //Airborne
+          _motionData ->stationaryCount = 0;
+          _motionData ->moving = true;
           //Serial.println("Moving...");
-          sleepModeActivated = false;
+          _motionData ->sleepModeActivated = false;
       }
       else{
         //Serial.println("Stationary...");
-        stationaryCount++;
-        moving = false;
-        if (stationaryCount > sleepThreshold){
+        _motionData ->stationaryCount++;
+        _motionData ->moving = false;
+        if (_motionData ->stationaryCount > _motionData ->sleepThreshold){
           //Serial.println("Greater Than threshold");
-         if (stationaryCount > stationaryReset){
-           stationaryCount = 0;
+         if (_motionData ->stationaryCount > _motionData ->stationaryReset){
+           _motionData ->stationaryCount = 0;
          }
-         stationaryCount = stationaryCount + 10;
-         sleepModeActivated = true;
+         _motionData ->stationaryCount = _motionData ->stationaryCount + 10;
+         _motionData ->sleepModeActivated = true;
         }
         else{
           //Serial.print("stationaryCount");Serial.println( stationaryCount);
-          sleepModeActivated = false;
+          _motionData ->sleepModeActivated = false;
 
         }
       }
-      if (sleepModeActivated){
+      if (_motionData ->sleepModeActivated){
        //Turn Off Lights. Switch Arduino to Low Power Consumption.
        frisbeem._com.log("Sleep Mode");
       }
       else {
-        if (moving) { //Rainbow Pattern
+        if (_motionData ->moving) { //Rainbow Pattern
           frisbeem._com.log("Airborne");
         }
         else{ //Stationary
@@ -78,6 +117,6 @@ void MotionState::update()
       }
       //delay(50);//temp
       //Setup For Next Update
-      lastTime = now;
-      lastOmega = newOmega;
+      _motionData ->lastTime = _motionData ->now;
+      _motionData ->lastOmega = _motionData ->newOmega;
   }

@@ -12,7 +12,7 @@ public:
 
   bool _on = true;
   bool show = true;
-  
+
   Adafruit_DotStar _strip;
   uint8_t brightness = 100;
 
@@ -31,6 +31,7 @@ public:
   void quarters(uint32_t c,uint32_t c2, uint8_t offset);
 
   //Solid Colors
+  virtual void orange();
   virtual void blue();
   virtual void green();
   virtual void red();

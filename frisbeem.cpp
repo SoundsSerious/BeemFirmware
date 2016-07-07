@@ -13,10 +13,9 @@ void Frisbeem::initlaize(){
   _lights.initlaize();
   //Serial.println("Swith State Creation");
   _com.log("Initalizing Motion...");
-  _motionState = StateSwitch();
+  _motionState = MotionSwitch();
+
   //Serial.println("Motion State Creation");
-  _com.log("Go For Motion");
-  _motionState.initialize();
   _com.log("Go For Loop");
 }
 
@@ -88,8 +87,6 @@ void Frisbeem::processMotion()
   currentMotionEvent = genNextEvent();
   currentMotionEvent.visit( this );//Subject Call notify()
   currentMotionEvent.visit( &_motionState );//StateSwitchCall
-  //_motionState._states.back() -> handleInput( currentMotionEvent ); //Hack For Motion Direct
-  //currentMotionEvent.visit( _powerState);//StateSwitchCall
 }
 
 MotionEvent Frisbeem::genNextEvent()

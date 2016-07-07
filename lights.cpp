@@ -14,26 +14,25 @@ void Lights::initlaize()
 
 void Lights::update(uint8_t wait)
 {
-  // if (frisbeem._motionState.stateNow() -> sleepModeActivated || !_on ){
-  //   off();
-  //   refresh();
-  //   delay(250);
-  // }
-  // else{
-    //rainbow(frisbeem.lightOffset );
-
-    if ( frisbeem._mpu.rest ){ blue(); }
-    else if(frisbeem._mpu.spin ){ red(); }
-    else if( ~frisbeem._mpu.rest ){ green(); }
-    if ( show ){//Alternate for POV
-      refresh();
-      show = !show;
-    }
-    else{
-      show = !show;
-    }
-    //delay(wait);
-  // }
+  if (frisbeem._motionState.stateNow()->_motionData -> sleepModeActivated || !_on){
+    off();
+    refresh();
+    delay(250);
+  }
+  else{ //Do Da Lights
+    // switch ( frisbeem._motionState.currentState )
+    // {
+    //   case MotionSwitch::REST:
+    //     blue();
+    //   case MotionSwitch::SPIN:
+    //     green();
+    //   case MotionSwitch::MOTION:
+    //     orange();
+    //   default:
+    //     red();
+    // }
+    // refresh();
+  }
 }
 
 void Lights::refresh(){
@@ -124,6 +123,14 @@ uint32_t Lights::wheel(byte WheelPos) {
   } else {
    WheelPos -= 170;
    return _strip.Color(0, WheelPos * 3, 255 - WheelPos * 3);
+  }
+}
+
+void Lights::orange() {
+  uint16_t i, j;
+
+  for(i=0; i<_strip.numPixels(); i++) {
+      _strip.setPixelColor(i, wheel(200));
   }
 }
 

@@ -101,17 +101,12 @@ class MPU_9250 {
 
   //Low Pass Filter
   float Kaxy_lowpass = 0.005;
-  float Axy, Axy_lp;
   float Axy_MagThresh = 0.1;
+  float Axy, Axy_lp;
   int lp_err_running_count = 0;
   int lp_err_count_thresh = 20;
 
-  //Spin threshold
-  float spinThreshold = 200;
-
-  //Motion States
   bool rest = true;
-  bool spin = false;
 
   //Raw Measurements
   VectorFloat A, G, M;
@@ -156,8 +151,7 @@ class MPU_9250 {
 
   //Motion Intellegence
   void calculatePositionalInformation();
-  void determineIsSpinning();
-  void determineIsRest();
+  void calculateInplaneAcceleration();
   void determineVelocityNPosition(VectorFloat &Alin, VectorFloat &Vel, VectorFloat &Pos);
 
   // Function which accumulates gyro and accelerometer data after device initialization. It calculates the average

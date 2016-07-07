@@ -45,10 +45,13 @@ class StateSwitch: public State
 {
   //Class that passes argument to current state
 public:
+  StateSwitch(){ initialize(); };
+  ~StateSwitch(){};
+
   int currentState = 0;
   std::vector<State*>  _states;
   //Important Funcitons
-  virtual void initialize();
+  virtual void initialize(){};
   virtual void handleInput( Event &event);
 
   virtual String type() {return "StateSwitch";};
@@ -73,19 +76,22 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 //MOTION STATES
 ////////////////////////////////////////////////////////////////////////////////
-class IMotion
-{ //Motion States Recieve Motion Events
-  virtual void handleInput( MotionEvent &event ){};
+class IMotion //Interface. Motion States Should Take Motion Events
+{
+  virtual void handleInput( MotionEvent &motion ){};
 };
 
-class MotionState: public State, public IMotion
-{
-public:
+//Persistant Object To Share Among Substates
+class MotionData
+{ public:
   //Motion State Should Track Generalized Values Among All States
   //Last Update Time
   unsigned long lastTime = micros();
   unsigned long now = micros();
   unsigned long dt;
+
+  //Spin threshold
+  float spinThreshold = 200;
 
   //Bullshit For Functionality... send out to other classes
   int stationaryCount;
@@ -96,10 +102,20 @@ public:
 
   //Torque Parameters
   float dOmegaDt, _torque, torque, dOmega, newOmega, lastOmega;
+};
+
+class MotionState: public State, public IMotion
+{
+public:
+  MotionState();
+  ~MotionState(){};
+  //Slot For MotionData Object
+  MotionData *_motionData;
+  MotionEvent *_motionEvent;
 
   //Override handleInput for visitor pattern
   virtual void handleInput( Event &event ){};
-  virtual void handleInput( MotionEvent &event );
+  virtual void handleInput( MotionEvent &motion );
 
   //Other Important Functions
   virtual void update();
@@ -115,20 +131,34 @@ public:
 
 };
 
+class Rest: public MotionState {};
+class Motion: public MotionState {};
+class Spin: public MotionState {};
+
 class MotionSwitch: public StateSwitch, public IMotion
-{ //Sub States Should Be In this Order
+{
+public:
+  MotionSwitch(){ initialize(); };
+  ~MotionSwitch(){};
+
+  //Sub States Should Be In this Order
   enum MotionStates {
     REST = 0,
-    SPIN,
     MOTION,
+    SPIN,
   };
+
+  //Make Motion States
+  Rest restState;
+  Motion motionState;
+  Spin spinState;
 
   int currentState = REST;
   std::vector<MotionState*>  _states;
   //Important Funcitons
   virtual void initialize();
   virtual void handleInput( Event &event);
-  virtual void handleInput( MotionEvent &event );
+  virtual void handleInput( MotionEvent &motion );
 
   MotionState* stateNow()
   {
@@ -136,7 +166,3 @@ class MotionSwitch: public StateSwitch, public IMotion
   };
 
 };
-
-class Rest: public MotionState {};
-class Motion: public MotionState {};
-class Spin: public MotionState {};

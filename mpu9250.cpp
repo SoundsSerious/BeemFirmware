@@ -318,35 +318,25 @@ void MPU_9250::calculatePositionalInformation(){
   dmpGetGravity( Grav );
   dmpGetLinearAccel(Alin, A, Grav);
   Awrld = Alin.getRotated( &q );
-  determineIsSpinning();
-  determineIsRest();
+  calculateInplaneAcceleration();
   determineVelocityNPosition(Awrld,V,X);
   lastUpdate = now;
 }
 
-void MPU_9250::determineIsSpinning()
-{
-  if ( G.z > spinThreshold ){ spin = true;}
-  else{ spin = false;}
-}
 //Determine If At rest
-void MPU_9250::determineIsRest()
+void MPU_9250::calculateInplaneAcceleration()
 {
   //Root Sum Square XY acceleration
-  Axy = sqrt(Awrld.x*Awrld.x + Awrld.y*Awrld.y);
+  Axy = sqrt(Alin.x*Alin.x + Alin.y*Alin.y);
   //Low Pass Filter
   Axy_lp = Axy_lp + (Axy - Axy_lp) * Kaxy_lowpass;
   //Check For Stable State To Zero Low Pass
   if (Axy < Axy_MagThresh && Axy_lp > Axy_MagThresh){lp_err_running_count += 1;}
-  else {lp_err_running_count = 0;}
+  else {lp_err_running_count = 0;} //Reset Count
   if ( lp_err_running_count > lp_err_count_thresh ){ Axy_lp = 0; }
-  //Check If Not Spinning, And Then Set Rest True If Below Criteria
-  if ( spin ){ rest = false;}
-  else
-  {
-    if ( Axy_lp < Axy_MagThresh){ rest = true;}
-    else if ( Axy_lp >= Axy_MagThresh){ rest = false;}
- }
+  //Set Rest Flag
+  if (Axy < Axy_MagThresh){ rest = true; }
+  else{ rest = false; }
 }
 //Performs Double Integration
 void MPU_9250::determineVelocityNPosition(VectorFloat &Awrld, VectorFloat &Vel, VectorFloat &Pos)
@@ -371,7 +361,7 @@ void MPU_9250::determineVelocityNPosition(VectorFloat &Awrld, VectorFloat &Vel, 
     Vel.z = 0;
   }
   //If Spinning Integrate Position
-  if ( spin ){
+  if ( frisbeem._motionState.currentState == 2){
     Pos.x += ( Vel.x + vx ) * h;
     Pos.y += ( Vel.y + vy ) * h;
     Pos.z += ( Vel.z + vz ) * h;

@@ -21,10 +21,10 @@ public:
   //Physical parameters
 
   //States
-  StateSwitch _powerState;
-  StateSwitch _motionState;
-  StateSwitch _lightMode;
-  StateSwitch _gameMode;
+  // StateSwitch _powerState;
+  MotionSwitch _motionState;
+  // StateSwitch _lightMode;
+  // StateSwitch _gameMode;
 
   //Hardware
   MPU_9250 _mpu;
