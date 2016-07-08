@@ -314,13 +314,18 @@ void MPU_9250::calculatePositionalInformation(){
 
   // frisbeem._com.log("Mahony");
   // MahonyQuaternionUpdate(A.x,A.y,A.z,G.x*PI/180.0f,G.y*PI/180.0f,G.z*PI/180.0f,M.y,M.x,M.z);
-
+  frisbeem._com.log("Grav");
   dmpGetGravity( Grav );
+  frisbeem._com.log("LinAccel");
   dmpGetLinearAccel(Alin, A, Grav);
+  frisbeem._com.log("A World");
   Awrld = Alin.getRotated( &q );
+  frisbeem._com.log("In plane motion");
   calculateInplaneAcceleration();
+  frisbeem._com.log("Calc Motion");
   determineVelocityNPosition(Awrld,V,X);
   lastUpdate = now;
+  frisbeem._com.log("Done Wid MPU");
 }
 
 //Determine If At rest

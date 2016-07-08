@@ -3,6 +3,7 @@
 
 //Fwd Declaration
 class State;
+class MotionState;
 class Subject;
 class Observer;
 class StateSwitch;
@@ -10,6 +11,7 @@ class StateSwitch;
 class IEvent
 {
   virtual void visit(State *s) =0;
+  virtual void visit(MotionState *s) =0;
   virtual void visit(Subject *sj) = 0;
   virtual void visit(Observer *o) =0;
   virtual void visit(StateSwitch *s) =0; //State
@@ -24,6 +26,7 @@ public:
   String msg;
   //Should Return The Type Of Event
   virtual void visit(State *s); //State
+  virtual void visit(MotionState *s);
   virtual void visit(Subject *sj); //Subject
   virtual void visit(Observer *o); //Observer
   virtual void visit(StateSwitch *s); //State
@@ -42,6 +45,7 @@ public:
 
   //Should Return The Type Of Event
   virtual void visit(State *s); //State
+  virtual void visit(MotionState *s);
   virtual void visit(Subject *sj); //Subject
   virtual void visit(Observer *o); //Observer
   virtual void visit(StateSwitch *s); //State

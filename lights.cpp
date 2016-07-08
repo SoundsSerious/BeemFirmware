@@ -1,5 +1,6 @@
 #import "lights.h"
 #import "globals.h"
+#import "state.h"
 
 void Lights::initlaize()
 {
@@ -20,18 +21,25 @@ void Lights::update(uint8_t wait)
     delay(250);
   }
   else{ //Do Da Lights
-    // switch ( frisbeem._motionState.currentState )
-    // {
-    //   case MotionSwitch::REST:
-    //     blue();
-    //   case MotionSwitch::SPIN:
-    //     green();
-    //   case MotionSwitch::MOTION:
-    //     orange();
-    //   default:
-    //     red();
-    // }
-    // refresh();
+    frisbeem._com.log("State Now");
+    frisbeem._com.log( frisbeem._motionState.stateNow() -> type() );
+    if ( frisbeem._motionState.currentState == MotionSwitch::REST){
+        frisbeem._com.log("Case Rest");
+        blue();
+    }
+    else if ( frisbeem._motionState.currentState == MotionSwitch::SPIN){
+        frisbeem._com.log("Case Spin");
+        green();
+    }
+    else if ( frisbeem._motionState.currentState == MotionSwitch::MOTION) {
+        frisbeem._com.log("Case Motion");
+        orange();
+    }
+    else {
+        frisbeem._com.log("Default");
+        red();
+    }
+    refresh();
   }
 }
 

@@ -56,9 +56,9 @@ public:
 
   virtual String type() {return "StateSwitch";};
 
-  State* stateNow()
+  virtual State* stateNow()
   {
-    return _states.back();
+    return _states.at(currentState);
   };
   //Not Implemented Yet
   virtual void update() {
@@ -78,7 +78,8 @@ public:
 ////////////////////////////////////////////////////////////////////////////////
 class IMotion //Interface. Motion States Should Take Motion Events
 {
-  virtual void handleInput( MotionEvent &motion ){};
+public:
+  virtual void handleInput( MotionEvent &motion )=0;
 };
 
 //Persistant Object To Share Among Substates
@@ -102,12 +103,13 @@ class MotionData
 
   //Torque Parameters
   float dOmegaDt, _torque, torque, dOmega, newOmega, lastOmega;
+  String msg = "Hello is motion";
 };
 
 class MotionState: public State, public IMotion
 {
 public:
-  MotionState();
+  MotionState() ;
   ~MotionState(){};
   //Slot For MotionData Object
   MotionData *_motionData;
@@ -128,12 +130,12 @@ public:
   //Need To Define Method All Event Types... C++ cannot double dispatch so
   //It helps to overload the state event handlers... it can't do both at once
   virtual String type() {return "MotionState";};
-
+  String msg = "Hello Is Motion";
 };
 
-class Rest: public MotionState {};
-class Motion: public MotionState {};
-class Spin: public MotionState {};
+class RestState: public MotionState{virtual String type() {return "RestState";};};
+class DynamicMotionState: public MotionState{virtual String type() {return "DynamicMotionState";};};
+class SpinState: public MotionState{virtual String type() {return "SpinState";};};
 
 class MotionSwitch: public StateSwitch, public IMotion
 {
@@ -149,20 +151,33 @@ public:
   };
 
   //Make Motion States
-  Rest restState;
-  Motion motionState;
-  Spin spinState;
+  RestState restState;
+  DynamicMotionState motionState;
+  SpinState spinState;
 
   int currentState = REST;
+
+  //Watchout! Defining This Outside of a default constructor can cause invalid pointers
+  //to be stored.
   std::vector<MotionState*>  _states;
+
   //Important Funcitons
   virtual void initialize();
   virtual void handleInput( Event &event);
   virtual void handleInput( MotionEvent &motion );
+  virtual MotionState * stateNow();
 
-  MotionState* stateNow()
-  {
-    return _states.back();
+  virtual String type() {return "MotionSwitch";};
+
+  //Not Implemented Yet
+  virtual void update() {
+    _states[ currentState ] -> update();
+  };
+  virtual void enter() {
+    _states[ currentState ] -> enter();
+  };
+  virtual void leave() {
+    _states[ currentState ] -> leave();
   };
 
 };

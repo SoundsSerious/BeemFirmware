@@ -22,6 +22,11 @@ void MotionSwitch::initialize()
   _states.push_back(&spinState);
 }
 
+MotionState* MotionSwitch::stateNow()
+{
+  return _states[ currentState ];
+};
+
 void MotionSwitch::handleInput( Event &event)
 { frisbeem._com.log("MotionSwitch Handiling Input: "+event.type());
   MotionState *s = stateNow();
@@ -41,17 +46,26 @@ MotionState::MotionState()
 
 void MotionState::handleInput( MotionEvent &motion )
 {
+  frisbeem._com.log("MotionState Handiling Motion Input: "+motion.type());
   _motionEvent = &motion;
   //Check Spin
   if ( motion.G.z > ( _motionData -> spinThreshold) )
   {
-    frisbeem._motionState.currentState = MotionSwitch::SPIN;
+    frisbeem._com.log("Motion State Setting To SPIN");
+    frisbeem._com.log(String(MotionSwitch::SPIN));
+    frisbeem._motionState.currentState = 1;
   }
   else if( frisbeem._mpu.rest ) //Check If Resting
   {
-    frisbeem._motionState.currentState = MotionSwitch::REST;
+    frisbeem._com.log("Motion State Setting To REST");
+    frisbeem._com.log(String(MotionSwitch::REST));
+    frisbeem._motionState.currentState = 0;
   }
-  else{ frisbeem._motionState.currentState = MotionSwitch::MOTION; }
+  else{
+    frisbeem._com.log("Motion State Setting To MOTION");
+    frisbeem._com.log(String(MotionSwitch::MOTION));
+    frisbeem._motionState.currentState = 2;
+  }
 
   //Update State
   update();

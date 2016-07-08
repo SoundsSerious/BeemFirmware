@@ -11,9 +11,6 @@ void Frisbeem::initlaize(){
   //Update Strip
   _com.log("Go For Lights");
   _lights.initlaize();
-  //Serial.println("Swith State Creation");
-  _com.log("Initalizing Motion...");
-  _motionState = MotionSwitch();
 
   //Serial.println("Motion State Creation");
   _com.log("Go For Loop");
@@ -43,14 +40,6 @@ void Frisbeem::update(){
     //Send telemetry here... idk?
     _com.send_telemetry();
   }
-  //create newEvent and process events (circular buffer)
-  _com.log("Generating Events");
-  //Notify Observers Of new Event
-  _com.log("Hollerin'");
-  //Send Event To Current Motion State
-  //Serial.println("Calling handleInput");
-  _com.log("Making Decisions");
-
   //Initialize Lights
   _com.log("Puttin On The High Beems!");
   _lights.update(0);

@@ -161,7 +161,7 @@ void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
   if ( writeNow || force){
-    //Serial.println( "LOG:\t"+message );
+    Serial.println( "LOG:\t"+message );
     if (initialConnection){
       server.println( "LOG:\t"+message );
     }
