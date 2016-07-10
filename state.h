@@ -53,13 +53,14 @@ public:
   //Important Funcitons
   virtual void initialize(){};
   virtual void handleInput( Event &event);
-
+  virtual void transitionTo( int nextState );
   virtual String type() {return "StateSwitch";};
 
   virtual State* stateNow()
   {
     return _states.at(currentState);
   };
+
   //Not Implemented Yet
   virtual void update() {
     _states[ currentState ] -> update();
@@ -165,9 +166,13 @@ public:
   virtual void initialize();
   virtual void handleInput( Event &event);
   virtual void handleInput( MotionEvent &motion );
-  virtual MotionState * stateNow();
+  virtual void transitionTo( int nextState );
 
   virtual String type() {return "MotionSwitch";};
+  virtual MotionState* stateNow()
+  {
+    return _states.at(currentState);
+  };
 
   //Not Implemented Yet
   virtual void update() {
@@ -179,5 +184,4 @@ public:
   virtual void leave() {
     _states[ currentState ] -> leave();
   };
-
 };

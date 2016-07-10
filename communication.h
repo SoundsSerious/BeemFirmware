@@ -52,6 +52,7 @@ public:
   String read();
   void parseStringForMessage(String inputString);
   void handleCommand(String pk, String sk, String arg);
+  void sendCommand(String pk, String sk, String arg);
 
   void tick();
 

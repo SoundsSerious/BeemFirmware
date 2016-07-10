@@ -157,13 +157,21 @@ void COM::handleCommand(String pk, String sk, String arg)
   }
 }
 
+void COM::sendCommand( String pk, String sk, String msg)
+{
+  if (initialConnection){
+    server.println( pk+":\t"+sk+":\t"+msg );
+  }
+}
+
+
 void COM::log(String message, bool force){
   //Super Debug Mode Will Try Both Serial And WiFi-zle if it's turn
   //We will default to serial always for zeee robust debugging
   if ( writeNow || force){
     Serial.println( "LOG:\t"+message );
     if (initialConnection){
-      server.println( "LOG:\t"+message );
+      server.println( "INF:\tLOG:\t"+message );
     }
   }
   /*#ifdef LOG_DEBUG

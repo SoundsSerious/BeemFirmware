@@ -7,6 +7,7 @@ class MotionState;
 class Subject;
 class Observer;
 class StateSwitch;
+class Game;
 
 class IEvent
 {

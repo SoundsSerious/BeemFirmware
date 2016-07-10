@@ -10,6 +10,15 @@ void StateSwitch::handleInput( Event &event)
   event.visit( s );
 }
 
+void StateSwitch::transitionTo( int nextState )
+{
+  frisbeem._com.log("Leaving: "+ stateNow() -> type() );
+  leave();
+  currentState = nextState;
+  frisbeem._com.log("Entering: "+ stateNow() -> type() );
+  enter();
+};
+
 ////////////////////////////////////////////////////////////////////////////////
 //MOTION STATES
 ////////////////////////////////////////////////////////////////////////////////
@@ -21,11 +30,6 @@ void MotionSwitch::initialize()
   _states.push_back(&motionState);
   _states.push_back(&spinState);
 }
-
-MotionState* MotionSwitch::stateNow()
-{
-  return _states[ currentState ];
-};
 
 void MotionSwitch::handleInput( Event &event)
 { frisbeem._com.log("MotionSwitch Handiling Input: "+event.type());
@@ -39,10 +43,23 @@ void MotionSwitch::handleInput( MotionEvent &motion)
   motion.visit( s );
 }
 
+void MotionSwitch::transitionTo( int nextState )
+{
+  if (nextState != currentState)
+  {
+    frisbeem._com.log("Leaving: "+ stateNow() -> type() );
+    leave();
+    currentState = nextState;
+    frisbeem._com.log("Entering: "+ stateNow() -> type() );
+    enter();
+  }
+};
+
 MotionState::MotionState()
 {
   _motionData = &motionData;
 }
+
 
 void MotionState::handleInput( MotionEvent &motion )
 {
@@ -51,20 +68,14 @@ void MotionState::handleInput( MotionEvent &motion )
   //Check Spin
   if ( motion.G.z > ( _motionData -> spinThreshold) )
   {
-    frisbeem._com.log("Motion State Setting To SPIN");
-    frisbeem._com.log(String(MotionSwitch::SPIN));
-    frisbeem._motionState.currentState = 1;
+    frisbeem._motionState.transitionTo(MotionSwitch::SPIN);
   }
   else if( frisbeem._mpu.rest ) //Check If Resting
   {
-    frisbeem._com.log("Motion State Setting To REST");
-    frisbeem._com.log(String(MotionSwitch::REST));
-    frisbeem._motionState.currentState = 0;
+    frisbeem._motionState.transitionTo(MotionSwitch::REST);
   }
   else{
-    frisbeem._com.log("Motion State Setting To MOTION");
-    frisbeem._com.log(String(MotionSwitch::MOTION));
-    frisbeem._motionState.currentState = 2;
+    frisbeem._motionState.transitionTo(MotionSwitch::MOTION);
   }
 
   //Update State

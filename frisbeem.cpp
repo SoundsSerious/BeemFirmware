@@ -1,4 +1,5 @@
 #include "frisbeem.h"
+#include "games.h"
 
 void Frisbeem::initlaize(){
   //Initalize communication
@@ -11,6 +12,10 @@ void Frisbeem::initlaize(){
   //Update Strip
   _com.log("Go For Lights");
   _lights.initlaize();
+
+  _com.log("Listening To Game");
+  Firework *_currentGame = new Firework();
+  addObserver( _currentGame );
 
   //Serial.println("Motion State Creation");
   _com.log("Go For Loop");
@@ -25,7 +30,6 @@ void Frisbeem::update(){
   _com.log("Beeming Into Space...");
   //Update COM layer
   _com.update();
-
 
   //Handle Other Stuff
   _com.log("Updating...");
@@ -74,8 +78,9 @@ void Frisbeem::processMotion()
 { //Generate A New Event & Add to circular buffer after deleting current item
   //Serial.print("Getting New Event #");Serial.println(_eventCount);
   currentMotionEvent = genNextEvent();
-  currentMotionEvent.visit( this );//Subject Call notify()
   currentMotionEvent.visit( &_motionState );//StateSwitchCall
+  currentMotionEvent.visit( this );//Subject Call notify()
+
 }
 
 MotionEvent Frisbeem::genNextEvent()

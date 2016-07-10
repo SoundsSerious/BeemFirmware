@@ -6,10 +6,13 @@
 #include "entity.h"
 #include "subject.h"
 #include "event.h"
+//#include "games.h"
 
 using namespace std;
 
 //WARNING:: SPELLING MAY BE EXTREMELY BAD!!!
+class Game;
+class Firework;
 
 //In which we combine Lights + Motion + Games
 class Frisbeem: public Subject, public Entity
@@ -23,7 +26,6 @@ public:
   //States
   // StateSwitch _powerState;
   MotionSwitch _motionState;
-  // StateSwitch _lightMode;
   // StateSwitch _gameMode;
 
   //Hardware
